@@ -1,0 +1,11 @@
+# Environment
+*.vs/
+*.vscode/
+
+# Compilation results
+**/bin/
+**/obj/
+
+# Database
+*.db
+**/Migrations/
