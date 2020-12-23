@@ -1,3 +1,4 @@
+using Application;
 using Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -17,12 +18,24 @@ namespace WebApi
 
         public IConfiguration Configuration { get; }
 
+        private static void ConfigureCustomServices(IServiceCollection services)
+        {
+            services.AddInfrastructure();
+            services.AddApplication();
+        }
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddInfrastructure();
+            ConfigureCustomServices(services);
 
-            services.AddControllers();
+            services.AddControllers(options =>
+            {
+                // By default, asynchronous endpoints will have the '-Async' part of their name omitted
+                // see: https://docs.microsoft.com/en-us/dotnet/core/compatibility/aspnetcore#mvc-async-suffix-trimmed-from-controller-action-names
+                options.SuppressAsyncSuffixInActionNames = false;
+            });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApi", Version = "v1" });
