@@ -1,56 +1,40 @@
-﻿using Application.Commons.Interfaces;
+﻿using Application.Products.Commands;
+using Application.Products.Queries;
 using Domain.Models;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace WebApi.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class ProductController : ControllerBase
+    public class ProductController : ApiController
     {
-        private readonly IApplicationDbContext _context;
+        public ProductController(ISender mediator)
+            : base(mediator) { }
 
-        private readonly ILogger<ProductController> _logger;
+        [HttpPost]
+        public async Task<IActionResult> CreateProductAsync([FromBody] CreateProductCommand command)
+        {
+            var createdProduct = await Mediator.Send(command);
 
-        public ProductController(IApplicationDbContext context, ILogger<ProductController> logger)
-            => (_context, _logger) = (context, logger);
+            return CreatedAtAction(nameof(GetProductByIdAsync), new { createdProduct.Id }, createdProduct);
+        }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteById(int id)
+        public async Task<IActionResult> DeleteProductByIdAsync(int id)
         {
-            var toRemove = _context.Products.First(product => product.Id == id);
-            _context.Products.Remove(toRemove);
-            _context.SaveChanges();
-
-            _logger.LogDebug($"Product of id {id} removed");
+            await Mediator.Send(new DeleteProductCommand { ProductId = id });
 
             return NoContent();
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Product>> Get()
-            => Ok(_context.Products);
+        public async Task<ActionResult<IEnumerable<Product>>> GetProductsAsync()
+            => Ok(await Mediator.Send(new GetAllProductsQuery()));
 
         [HttpGet("{id}")]
-        public ActionResult<IEnumerable<Product>> GetById(int id)
-            => Ok(_context.Products.First(product => product.Id == id));
-
-        [HttpPost]
-        public IActionResult Post()
-        {
-            var product = _context.Products.Add(new Product
-            {
-                Name = "Hello World !"
-            }).Entity;
-
-            _context.SaveChanges();
-
-            _logger.LogDebug($"Product of id {product.Id} created");
-
-            return CreatedAtAction(nameof(GetById), new { product.Id }, product);
-        }
+        public async Task<ActionResult<IEnumerable<Product>>> GetProductByIdAsync(int id)
+            => Ok(await Mediator.Send(new GetProductQuery { ProductId = id }));
     }
 }

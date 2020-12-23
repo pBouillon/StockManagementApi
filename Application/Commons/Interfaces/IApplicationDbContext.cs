@@ -1,5 +1,7 @@
 ﻿using Domain.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Application.Commons.Interfaces
 {
@@ -7,6 +9,6 @@ namespace Application.Commons.Interfaces
     {
         DbSet<Product> Products { get; set; }
 
-        int SaveChanges();
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }
