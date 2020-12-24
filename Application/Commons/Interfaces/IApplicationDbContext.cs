@@ -1,7 +1,7 @@
-﻿using Domain.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using System.Threading.Tasks;
+using Domain.Entities;
 
 namespace Application.Commons.Interfaces
 {

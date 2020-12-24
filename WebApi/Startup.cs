@@ -18,9 +18,9 @@ namespace WebApi
 
         public IConfiguration Configuration { get; }
 
-        private static void ConfigureCustomServices(IServiceCollection services)
+        private void ConfigureCustomServices(IServiceCollection services)
         {
-            services.AddInfrastructure();
+            services.AddInfrastructure(Configuration);
             services.AddApplication();
         }
 
@@ -38,7 +38,7 @@ namespace WebApi
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApi", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Stock management web API", Version = "v1" });
             });
         }
 
@@ -49,7 +49,7 @@ namespace WebApi
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApi v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Stock management web API v1"));
             }
 
             app.UseRouting();

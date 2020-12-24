@@ -1,6 +1,6 @@
 ﻿using Application.Products.Commands;
 using Application.Products.Queries;
-using Domain.Models;
+using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -34,7 +34,18 @@ namespace WebApi.Controllers
             => Ok(await Mediator.Send(new GetAllProductsQuery()));
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProductByIdAsync(int id)
+        public async Task<ActionResult<Product>> GetProductByIdAsync(int id)
             => Ok(await Mediator.Send(new GetProductQuery { ProductId = id }));
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<Product>> UpdateProductById(int id, UpdateProductCommand command)
+        {
+            if (id != command.ProductId)
+            {
+                return BadRequest();
+            }
+
+            return Ok(await Mediator.Send(command));
+        }
     }
 }

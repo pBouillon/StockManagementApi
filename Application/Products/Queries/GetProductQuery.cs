@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Commons.Interfaces;
-using Domain.Models;
+using Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Logging;
 

@@ -5,9 +5,7 @@ if ($MigrationName -eq $null) {
 }
 
 Write-Output "Creating the migration..."
-dotnet ef migrations add $MigrationName --output-dir Persistence/Migrations/
-Write-Output "Mirgration created."
+dotnet ef migrations add $MigrationName --output-dir Persistence/Migrations/ --startup-project ../WebApi
 
 Write-Output "Applying the migration..."
-dotnet ef database update
-Write-Output "Migration applied."
+dotnet ef database update --startup-project ../WebApi
