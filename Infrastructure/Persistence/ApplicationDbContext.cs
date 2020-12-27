@@ -4,28 +4,48 @@ using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Persistence
 {
+    /// <inheritdoc cref="IApplicationDbContext"/>
     public class ApplicationDbContext : DbContext, IApplicationDbContext
     {
-        public DbSet<Product> Products { get; set; }
-
-        //public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        //    : base(options) { }
-
+        /// <summary>
+        /// Injected <see cref="IDateTime"/>
+        /// </summary>
         private readonly IDateTime _dateTime;
 
-        //public ApplicationDbContext(IDateTime dateTime)
-        //    => _dateTime = dateTime;
+        /// <summary>
+        /// Injected logger
+        /// </summary>
+        private readonly ILogger<ApplicationDbContext> _logger;
 
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IDateTime dateTime)
+        ///  <inheritdoc cref="IApplicationDbContext.Products"/>
+        public DbSet<Product> Products { get; set; }
+
+        /// <summary>
+        /// Default constructor to create the context
+        /// </summary>
+        /// <param name="options">Database context options to create the context</param>
+        /// <param name="dateTime">Injected <see cref="IDateTime"/></param>
+        /// <param name="logger">Injected logger</param>
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IDateTime dateTime,
+            ILogger<ApplicationDbContext> logger) 
             : base(options)
-            => _dateTime = dateTime;
+            => (_dateTime, _logger) = (dateTime, logger);
 
-        //protected override void OnConfiguring(DbContextOptionsBuilder options)
-        //    => options.UseSqlite("Data Source=../stock-management.db");
-
+        /// <summary>
+        /// Save the pending changes in the database
+        /// <para>
+        /// The <see cref="AuditableEntity"/> will be automatically updated based on the type of the operation
+        /// performed
+        /// </para>
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// <see cref="CancellationToken"/> used to asynchronously cancel the pending operation
+        /// </param>
+        /// <returns></returns>
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
             foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
@@ -33,16 +53,22 @@ namespace Infrastructure.Persistence
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        entry.Entity.Created = _dateTime.Now;
+                        entry.Entity.CreatedOn = _dateTime.Now;
+                        _logger.LogInformation("Creation date set");
                         break;
 
                     case EntityState.Modified:
-                        entry.Entity.LastModified = _dateTime.Now;
+                        entry.Entity.LastModifiedOn = _dateTime.Now;
+                        _logger.LogInformation($"Modification date updated for {entry}");
                         break;
                 }
             }
 
-            return await base.SaveChangesAsync(cancellationToken);
+            var saveChangesResult = await base.SaveChangesAsync(cancellationToken);
+
+            _logger.LogInformation("Changes committed to the database");
+
+            return saveChangesResult;
         }
     }
 }

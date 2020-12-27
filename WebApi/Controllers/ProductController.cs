@@ -14,7 +14,7 @@ namespace WebApi.Controllers
             : base(mediator) { }
 
         [HttpPost]
-        public async Task<IActionResult> CreateProductAsync([FromBody] CreateProductCommand command)
+        public async Task<ActionResult<Product>> CreateProductAsync(CreateProductCommand command)
         {
             var createdProduct = await Mediator.Send(command);
 
@@ -24,7 +24,7 @@ namespace WebApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProductByIdAsync(int id)
         {
-            await Mediator.Send(new DeleteProductCommand { ProductId = id });
+            await Mediator.Send(new DeleteProductCommand { Id = id });
 
             return NoContent();
         }
@@ -35,12 +35,12 @@ namespace WebApi.Controllers
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProductByIdAsync(int id)
-            => Ok(await Mediator.Send(new GetProductQuery { ProductId = id }));
+            => Ok(await Mediator.Send(new GetProductQuery { Id = id }));
 
         [HttpPut("{id}")]
         public async Task<ActionResult<Product>> UpdateProductById(int id, UpdateProductCommand command)
         {
-            if (id != command.ProductId)
+            if (id != command.Id)
             {
                 return BadRequest();
             }
