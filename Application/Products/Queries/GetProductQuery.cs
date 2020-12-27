@@ -1,16 +1,16 @@
-﻿using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Application.Commons.Interfaces;
+﻿using Application.Commons.Interfaces;
 using Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Application.Products.Queries
 {
     public class GetProductQuery : IRequest<Product?>
     {
-        public int ProductId { get; set; }
+        public int Id { get; set; }
     }
 
     public class GetProductQueryHandler : IRequestHandler<GetProductQuery, Product?>
@@ -23,6 +23,13 @@ namespace Application.Products.Queries
             => (_context, _logger) = (context, logger);
 
         public Task<Product?> Handle(GetProductQuery request, CancellationToken cancellationToken)
-            => Task.FromResult(_context.Products.FirstOrDefault(product => product.Id == request.ProductId));
+        {
+            var entity = _context.Products
+                .FirstOrDefault(product => product.Id == request.Id);
+
+            _logger.LogDebug($"Product of id { request.Id } retrieved { entity }");
+
+            return Task.FromResult(entity);
+        }
     }
 }

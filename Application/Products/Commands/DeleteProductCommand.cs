@@ -9,7 +9,7 @@ namespace Application.Products.Commands
 {
     public class DeleteProductCommand : IRequest
     {
-        public int ProductId { get; set; }
+        public int Id { get; set; }
     }
 
     public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand>
@@ -23,12 +23,14 @@ namespace Application.Products.Commands
 
         public async Task<Unit> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
         {
-            var toDelete = _context.Products
-                .SingleOrDefaultAsync(product => product.Id == request.ProductId, cancellationToken);
+            var entity = await _context.Products
+                .SingleOrDefaultAsync(product => product.Id == request.Id, cancellationToken);
 
-            _context.Products.Remove(await toDelete);
+            _context.Products.Remove(entity);
 
             _ = await _context.SaveChangesAsync(cancellationToken);
+
+            _logger.LogInformation($"Product {entity} successfully deleted");
 
             return Unit.Value;
         }

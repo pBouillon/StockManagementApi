@@ -4,6 +4,7 @@ using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Persistence
 {
@@ -11,20 +12,14 @@ namespace Infrastructure.Persistence
     {
         public DbSet<Product> Products { get; set; }
 
-        //public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        //    : base(options) { }
-
         private readonly IDateTime _dateTime;
 
-        //public ApplicationDbContext(IDateTime dateTime)
-        //    => _dateTime = dateTime;
+        private readonly ILogger<ApplicationDbContext> _logger;
 
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IDateTime dateTime)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IDateTime dateTime,
+            ILogger<ApplicationDbContext> logger) 
             : base(options)
-            => _dateTime = dateTime;
-
-        //protected override void OnConfiguring(DbContextOptionsBuilder options)
-        //    => options.UseSqlite("Data Source=../stock-management.db");
+            => (_dateTime, _logger) = (dateTime, logger);
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
@@ -33,16 +28,22 @@ namespace Infrastructure.Persistence
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        entry.Entity.Created = _dateTime.Now;
+                        entry.Entity.CreatedOn = _dateTime.Now;
+                        _logger.LogInformation("Creation date set");
                         break;
 
                     case EntityState.Modified:
-                        entry.Entity.LastModified = _dateTime.Now;
+                        entry.Entity.LastModifiedOn = _dateTime.Now;
+                        _logger.LogInformation($"Modification date updated for {entry}");
                         break;
                 }
             }
 
-            return await base.SaveChangesAsync(cancellationToken);
+            var saveChangesResult = await base.SaveChangesAsync(cancellationToken);
+
+            _logger.LogInformation("Changes committed to the database");
+
+            return saveChangesResult;
         }
     }
 }

@@ -10,9 +10,9 @@ namespace Application.Products.Commands
 {
     public class UpdateProductCommand : IRequest<Product>
     {
-        public int ProductId { get; set; }
+        public int Id { get; set; }
 
-        public string ProductName { get; set; }
+        public string Name { get; set; } = string.Empty;
     }
 
     public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, Product>
@@ -26,14 +26,16 @@ namespace Application.Products.Commands
 
         public async Task<Product> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
         {
-            var toUpdate = await _context.Products
-                .SingleOrDefaultAsync(product => product.Id == request.ProductId, cancellationToken);
+            var entity = await _context.Products
+                .SingleOrDefaultAsync(product => product.Id == request.Id, cancellationToken);
 
-            toUpdate.Name = request.ProductName;
+            entity.Name = request.Name;
 
             _ = _context.SaveChangesAsync(cancellationToken);
+            
+            _logger.LogInformation($"{entity} renamed to {request.Name}");
 
-            return toUpdate;
+            return entity;
         }
     }
 }

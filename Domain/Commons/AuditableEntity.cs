@@ -4,8 +4,8 @@ namespace Domain.Commons
 {
     public class AuditableEntity
     {
-        public DateTime Created { get; set; }
+        public DateTime CreatedOn { get; set; }
 
-        public DateTime? LastModified { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
     }
 }

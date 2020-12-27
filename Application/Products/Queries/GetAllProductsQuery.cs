@@ -1,11 +1,11 @@
 ﻿using Application.Commons.Interfaces;
+using Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Domain.Entities;
 
 namespace Application.Products.Queries
 {
@@ -21,6 +21,12 @@ namespace Application.Products.Queries
             => (_context, _logger) = (context, logger);
 
         public Task<IEnumerable<Product>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
-            => Task.FromResult(_context.Products.AsEnumerable());
+        {
+            var entities = _context.Products.AsEnumerable();
+
+            _logger.LogDebug("All product retrieved");
+
+            return Task.FromResult(entities);
+        }
     }
 }
