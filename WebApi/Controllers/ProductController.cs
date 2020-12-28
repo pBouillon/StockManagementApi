@@ -1,9 +1,9 @@
-﻿using Application.Products.Commands.CreateProductCommand;
+﻿using Application.Commons.Dtos;
+using Application.Products.Commands.CreateProductCommand;
 using Application.Products.Commands.DeleteProductCommand;
 using Application.Products.Commands.UpdateProductCommand;
 using Application.Products.Queries.GetAllProductsQuery;
 using Application.Products.Queries.GetProductQuery;
-using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -17,7 +17,7 @@ namespace WebApi.Controllers
             : base(mediator) { }
 
         [HttpPost]
-        public async Task<ActionResult<Product>> CreateProductAsync(CreateProductCommand command)
+        public async Task<ActionResult<ProductDto>> CreateProductAsync(CreateProductCommand command)
         {
             var createdProduct = await Mediator.Send(command);
 
@@ -33,15 +33,15 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProductsAsync()
+        public async Task<ActionResult<IEnumerable<ProductDto>>> GetProductsAsync()
             => Ok(await Mediator.Send(new GetAllProductsQuery()));
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProductByIdAsync(int id)
+        public async Task<ActionResult<ProductDto>> GetProductByIdAsync(int id)
             => Ok(await Mediator.Send(new GetProductQuery { Id = id }));
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<Product>> UpdateProductById(int id, UpdateProductCommand command)
+        public async Task<ActionResult<ProductDto>> UpdateProductById(int id, UpdateProductCommand command)
         {
             if (id != command.Id)
             {

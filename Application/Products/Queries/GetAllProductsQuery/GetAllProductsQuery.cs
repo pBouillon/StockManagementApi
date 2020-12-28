@@ -1,4 +1,6 @@
-﻿using Application.Commons.Interfaces;
+﻿using Application.Commons.Dtos;
+using Application.Commons.Interfaces;
+using AutoMapper;
 using Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -12,12 +14,12 @@ namespace Application.Products.Queries.GetAllProductsQuery
     /// <summary>
     /// CQRS query to fetch all the <see cref="Product"/>
     /// </summary>
-    public class GetAllProductsQuery : IRequest<IEnumerable<Product>> { }
+    public class GetAllProductsQuery : IRequest<List<ProductDto>> { }
 
     /// <summary>
     /// Handler for the <see cref="GetAllProductsQuery"/>
     /// </summary>
-    public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, IEnumerable<Product>>
+    public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, List<ProductDto>>
     {
         /// <summary>
         /// Application context
@@ -30,12 +32,18 @@ namespace Application.Products.Queries.GetAllProductsQuery
         private readonly ILogger<GetAllProductsQueryHandler> _logger;
 
         /// <summary>
+        /// AutoMapper interface to map domain objects to DTO
+        /// </summary>
+        private readonly IMapper _mapper;
+
+        /// <summary>
         /// Default constructor for the handler
         /// </summary>
         /// <param name="context">Application context</param>
+        /// <param name="mapper">AutoMapper interface to map domain objects to DTO</param>
         /// <param name="logger">Logger</param>
-        public GetAllProductsQueryHandler(IApplicationDbContext context, ILogger<GetAllProductsQueryHandler> logger)
-            => (_context, _logger) = (context, logger);
+        public GetAllProductsQueryHandler(IApplicationDbContext context, IMapper mapper, ILogger<GetAllProductsQueryHandler> logger)
+            => (_context, _mapper, _logger) = (context, mapper, logger);
 
         /// <summary>
         /// Retrieve all <see cref="Product"/>
@@ -45,13 +53,13 @@ namespace Application.Products.Queries.GetAllProductsQuery
         /// <see cref="CancellationToken"/> used to asynchronously cancel the pending operation
         /// </param>
         /// <returns>An array of all the <see cref="Product"/> stored</returns>
-        public Task<IEnumerable<Product>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
+        public Task<List<ProductDto>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
         {
             var entities = _context.Products.AsEnumerable();
 
             _logger.LogDebug("All product retrieved");
 
-            return Task.FromResult(entities);
+            return Task.FromResult(_mapper.Map<List<ProductDto>>(entities));
         }
     }
 }
