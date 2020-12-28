@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Application.Products.Commands
+namespace Application.Products.Commands.CreateProductCommand
 {
     /// <summary>
     /// CQRS command to create a <see cref="Product"/>
