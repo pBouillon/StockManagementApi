@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using WebApi.Commons.ExceptionFilters;
 
 namespace WebApi
 {
@@ -34,6 +35,9 @@ namespace WebApi
                 // By default, asynchronous endpoints will have the '-Async' part of their name omitted
                 // see: https://docs.microsoft.com/en-us/dotnet/core/compatibility/aspnetcore#mvc-async-suffix-trimmed-from-controller-action-names
                 options.SuppressAsyncSuffixInActionNames = false;
+
+                // Add filters for the application's exceptions
+                options.Filters.Add<ValidationExceptionFilter>();
             });
 
             services.AddSwaggerGen(c =>

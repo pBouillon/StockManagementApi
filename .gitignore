@@ -1,7 +1,7 @@
 # Environment
 *.vs/
 *.vscode/
-*.csproj.*
+*.user
 
 # Compilation results
 **/bin/

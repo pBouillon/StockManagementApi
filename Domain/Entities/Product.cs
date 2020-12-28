@@ -8,6 +8,11 @@ namespace Domain.Entities
     public class Product : AuditableEntity
     {
         /// <summary>
+        /// Maximum length for the product name
+        /// </summary>
+        public const int NameMaxLength = 200;
+
+        /// <summary>
         /// If of the product
         /// </summary>
         public int Id { get; set; }

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Application.Products.Queries
+namespace Application.Products.Queries.GetProductQuery
 {
     /// <summary>
     /// CQRS query to retrieve a specific <see cref="Product"/>

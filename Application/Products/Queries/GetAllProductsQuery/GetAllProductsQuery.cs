@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Application.Products.Queries
+namespace Application.Products.Queries.GetAllProductsQuery
 {
     /// <summary>
     /// CQRS query to fetch all the <see cref="Product"/>
