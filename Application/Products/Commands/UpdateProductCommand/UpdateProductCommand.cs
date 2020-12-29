@@ -53,7 +53,8 @@ namespace Application.Products.Commands.UpdateProductCommand
         /// <param name="context">Application context</param>
         /// <param name="mapper">AutoMapper interface to map domain objects to DTO</param>
         /// <param name="logger">Logger</param>
-        public UpdateProductCommandHandler(IApplicationDbContext context, IMapper mapper, ILogger<UpdateProductCommandHandler> logger)
+        public UpdateProductCommandHandler(
+            IApplicationDbContext context, IMapper mapper, ILogger<UpdateProductCommandHandler> logger)
             => (_context, _mapper, _logger) = (context, mapper, logger);
 
         /// <summary>

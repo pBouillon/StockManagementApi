@@ -49,7 +49,8 @@ namespace Application.Products.Queries.GetProductQuery
         /// <param name="context">Application context</param>
         /// <param name="mapper">AutoMapper interface to map domain objects to DTO</param>
         /// <param name="logger">Logger</param>
-        public GetProductQueryHandler(IApplicationDbContext context, IMapper mapper, ILogger<GetProductQueryHandler> logger)
+        public GetProductQueryHandler(
+            IApplicationDbContext context, IMapper mapper, ILogger<GetProductQueryHandler> logger)
             => (_context, _mapper, _logger) = (context, mapper, logger);
 
         /// <summary>

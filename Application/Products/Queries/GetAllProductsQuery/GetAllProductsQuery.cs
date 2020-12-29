@@ -48,7 +48,8 @@ namespace Application.Products.Queries.GetAllProductsQuery
         /// <param name="context">Application context</param>
         /// <param name="mapper">AutoMapper interface to map domain objects to DTO</param>
         /// <param name="logger">Logger</param>
-        public GetAllProductsQueryHandler(IApplicationDbContext context, IMapper mapper, ILogger<GetAllProductsQueryHandler> logger)
+        public GetAllProductsQueryHandler(
+            IApplicationDbContext context, IMapper mapper, ILogger<GetAllProductsQueryHandler> logger)
             => (_context, _mapper, _logger) = (context, mapper, logger);
 
         /// <summary>
@@ -59,7 +60,8 @@ namespace Application.Products.Queries.GetAllProductsQuery
         /// <see cref="CancellationToken"/> used to asynchronously cancel the pending operation
         /// </param>
         /// <returns>An array of all the <see cref="Product"/> stored</returns>
-        public async Task<PaginatedList<ProductDto>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
+        public async Task<PaginatedList<ProductDto>> Handle(
+            GetAllProductsQuery request, CancellationToken cancellationToken)
         {
             var paginatedEntities = await _context.Products
                 .OrderBy(product => product.Id)

@@ -46,7 +46,8 @@ namespace Application.Products.Commands.CreateProductCommand
         /// <param name="context">Application context</param>
         /// <param name="mapper">AutoMapper interface to map domain objects to DTO</param>
         /// <param name="logger">Logger</param>
-        public CreateProductCommandHandler(IApplicationDbContext context, IMapper mapper, ILogger<CreateProductCommandHandler> logger)
+        public CreateProductCommandHandler(
+            IApplicationDbContext context, IMapper mapper, ILogger<CreateProductCommandHandler> logger)
             => (_context, _mapper, _logger) = (context, mapper, logger);
 
         /// <summary>
