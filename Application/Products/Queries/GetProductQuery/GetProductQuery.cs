@@ -1,17 +1,21 @@
-﻿using Application.Commons.Interfaces;
+﻿using System;
+using Application.Commons.Interfaces;
+using AutoMapper;
 using Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Commons.Exceptions;
+using Application.Products.Dtos;
 
 namespace Application.Products.Queries.GetProductQuery
 {
     /// <summary>
-    /// CQRS query to retrieve a specific <see cref="Product"/>
+    /// CQRS query to retrieve a specific <see cref="ProductDto"/>
     /// </summary>
-    public class GetProductQuery : IRequest<Product?>
+    public class GetProductQuery : IRequest<ProductDto>
     {
         /// <summary>
         /// Id of the product to retrieve
@@ -22,7 +26,7 @@ namespace Application.Products.Queries.GetProductQuery
     /// <summary>
     /// Handler for the <see cref="GetProductQuery"/>
     /// </summary>
-    public class GetProductQueryHandler : IRequestHandler<GetProductQuery, Product?>
+    public class GetProductQueryHandler : IRequestHandler<GetProductQuery, ProductDto>
     {
         /// <summary>
         /// Application context
@@ -35,12 +39,19 @@ namespace Application.Products.Queries.GetProductQuery
         private readonly ILogger<GetProductQueryHandler> _logger;
 
         /// <summary>
+        /// AutoMapper interface to map domain objects to DTO
+        /// </summary>
+        private readonly IMapper _mapper;
+
+        /// <summary>
         /// Default constructor for the handler
         /// </summary>
         /// <param name="context">Application context</param>
+        /// <param name="mapper">AutoMapper interface to map domain objects to DTO</param>
         /// <param name="logger">Logger</param>
-        public GetProductQueryHandler(IApplicationDbContext context, ILogger<GetProductQueryHandler> logger)
-            => (_context, _logger) = (context, logger);
+        public GetProductQueryHandler(
+            IApplicationDbContext context, IMapper mapper, ILogger<GetProductQueryHandler> logger)
+            => (_context, _mapper, _logger) = (context, mapper, logger);
 
         /// <summary>
         /// Retrieve a specific <see cref="Product"/> in the database, based on the incoming
@@ -50,15 +61,24 @@ namespace Application.Products.Queries.GetProductQuery
         /// <param name="cancellationToken">
         /// <see cref="CancellationToken"/> used to asynchronously cancel the pending operation
         /// </param>
-        /// <returns>The <see cref="Product"/> if any matches the query; null otherwise</returns>
-        public Task<Product?> Handle(GetProductQuery request, CancellationToken cancellationToken)
+        /// <returns>The <see cref="Product"/> of the given id, mapped to its <see cref="ProductDto"/></returns>
+        public Task<ProductDto> Handle(GetProductQuery request, CancellationToken cancellationToken)
         {
             var entity = _context.Products
                 .FirstOrDefault(product => product.Id == request.Id);
 
+            if (entity == null)
+            {
+                var unknownProductException = new NotFoundException(nameof(Product), new { request.Id });
+
+                _logger.LogError(unknownProductException, $"No product found for the provided id {request.Id}");
+
+                throw unknownProductException;
+            }
+
             _logger.LogDebug($"Product of id { request.Id } retrieved { entity }");
 
-            return Task.FromResult(entity);
+            return Task.FromResult(_mapper.Map<ProductDto>(entity));
         }
     }
 }

@@ -1,23 +1,31 @@
 ﻿using Application.Commons.Interfaces;
+using Application.Commons.Mappings;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Products.Dtos;
 
 namespace Application.Products.Queries.GetAllProductsQuery
 {
     /// <summary>
     /// CQRS query to fetch all the <see cref="Product"/>
     /// </summary>
-    public class GetAllProductsQuery : IRequest<IEnumerable<Product>> { }
+    public class GetAllProductsQuery : IRequest<PaginatedList<ProductDto>>
+    {
+        public int PageNumber { get; set; } = 1;
+
+        public int PageSize { get; set; } = 10;
+    }
 
     /// <summary>
     /// Handler for the <see cref="GetAllProductsQuery"/>
     /// </summary>
-    public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, IEnumerable<Product>>
+    public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, PaginatedList<ProductDto>>
     {
         /// <summary>
         /// Application context
@@ -30,12 +38,19 @@ namespace Application.Products.Queries.GetAllProductsQuery
         private readonly ILogger<GetAllProductsQueryHandler> _logger;
 
         /// <summary>
+        /// AutoMapper interface to map domain objects to DTO
+        /// </summary>
+        private readonly IMapper _mapper;
+
+        /// <summary>
         /// Default constructor for the handler
         /// </summary>
         /// <param name="context">Application context</param>
+        /// <param name="mapper">AutoMapper interface to map domain objects to DTO</param>
         /// <param name="logger">Logger</param>
-        public GetAllProductsQueryHandler(IApplicationDbContext context, ILogger<GetAllProductsQueryHandler> logger)
-            => (_context, _logger) = (context, logger);
+        public GetAllProductsQueryHandler(
+            IApplicationDbContext context, IMapper mapper, ILogger<GetAllProductsQueryHandler> logger)
+            => (_context, _mapper, _logger) = (context, mapper, logger);
 
         /// <summary>
         /// Retrieve all <see cref="Product"/>
@@ -45,13 +60,20 @@ namespace Application.Products.Queries.GetAllProductsQuery
         /// <see cref="CancellationToken"/> used to asynchronously cancel the pending operation
         /// </param>
         /// <returns>An array of all the <see cref="Product"/> stored</returns>
-        public Task<IEnumerable<Product>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
+        public async Task<PaginatedList<ProductDto>> Handle(
+            GetAllProductsQuery request, CancellationToken cancellationToken)
         {
-            var entities = _context.Products.AsEnumerable();
+            var paginatedEntities = await _context.Products
+                .OrderBy(product => product.Id)
+                .ProjectTo<ProductDto>(_mapper.ConfigurationProvider)
+                .ToPaginatedListAsync(request.PageNumber, request.PageSize);
 
-            _logger.LogDebug("All product retrieved");
+            _logger.LogInformation(
+                $"Retrieved {paginatedEntities.Items.Count} product(s) " +
+                $"from the page {paginatedEntities.PageIndex}/{paginatedEntities.TotalPages} " +
+                $"({request.PageSize} item(s) displayed per pages)");
 
-            return Task.FromResult(entities);
+            return paginatedEntities;
         }
     }
 }

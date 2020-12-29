@@ -1,16 +1,18 @@
 ﻿using Application.Commons.Interfaces;
+using AutoMapper;
 using Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Products.Dtos;
 
 namespace Application.Products.Commands.CreateProductCommand
 {
     /// <summary>
     /// CQRS command to create a <see cref="Product"/>
     /// </summary>
-    public class CreateProductCommand : IRequest<Product>
+    public class CreateProductCommand : IRequest<ProductDto>
     {
         /// <summary>
         /// Name of the <see cref="Product"/> to be created
@@ -21,7 +23,7 @@ namespace Application.Products.Commands.CreateProductCommand
     /// <summary>
     /// Handler for the <see cref="CreateProductCommand"/>
     /// </summary>
-    public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, Product>
+    public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, ProductDto>
     {
         /// <summary>
         /// Application context
@@ -34,12 +36,19 @@ namespace Application.Products.Commands.CreateProductCommand
         private readonly ILogger<CreateProductCommandHandler> _logger;
 
         /// <summary>
+        /// AutoMapper interface to map domain objects to DTO
+        /// </summary>
+        private readonly IMapper _mapper;
+
+        /// <summary>
         /// Default constructor for the handler
         /// </summary>
         /// <param name="context">Application context</param>
+        /// <param name="mapper">AutoMapper interface to map domain objects to DTO</param>
         /// <param name="logger">Logger</param>
-        public CreateProductCommandHandler(IApplicationDbContext context, ILogger<CreateProductCommandHandler> logger)
-            => (_context, _logger) = (context, logger);
+        public CreateProductCommandHandler(
+            IApplicationDbContext context, IMapper mapper, ILogger<CreateProductCommandHandler> logger)
+            => (_context, _mapper, _logger) = (context, mapper, logger);
 
         /// <summary>
         /// Add a <see cref="Product"/> to the database from the incoming <see cref="CreateProductCommand"/>
@@ -48,8 +57,8 @@ namespace Application.Products.Commands.CreateProductCommand
         /// <param name="cancellationToken">
         /// <see cref="CancellationToken"/> used to asynchronously cancel the pending operation
         /// </param>
-        /// <returns>The <see cref="Product"/> created</returns>
-        public async Task<Product> Handle(CreateProductCommand request, CancellationToken cancellationToken)
+        /// <returns>The <see cref="Product"/> created mapped to a <see cref="ProductDto"/></returns>
+        public async Task<ProductDto> Handle(CreateProductCommand request, CancellationToken cancellationToken)
         {
             var entity = new Product
             {
@@ -62,7 +71,7 @@ namespace Application.Products.Commands.CreateProductCommand
 
             _logger.LogInformation($"{entity} successfully created");
 
-            return entity;
+            return _mapper.Map<ProductDto>(entity);
         }
     }
 }

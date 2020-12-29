@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Commons.Exceptions;
 
 namespace Application.Products.Commands.DeleteProductCommand
 {
@@ -45,7 +46,7 @@ namespace Application.Products.Commands.DeleteProductCommand
         /// <summary>
         /// Delete a <see cref="Product"/> in the database from the incoming <see cref="CreateProductCommand"/>
         /// </summary>
-        /// <param name="cancellationToken">Incoming request to handle</param>
+        /// <param name="request">Incoming request to handle</param>
         /// <param name="cancellationToken">
         /// <see cref="CreateProductCommand"/> used to asynchronously cancel the pending operation
         /// </param>
@@ -54,6 +55,16 @@ namespace Application.Products.Commands.DeleteProductCommand
         {
             var entity = await _context.Products
                 .SingleOrDefaultAsync(product => product.Id == request.Id, cancellationToken);
+
+            if (entity == null)
+            {
+        
+                var unknownProductException = new NotFoundException(nameof(Product), new { request.Id });
+
+                _logger.LogError(unknownProductException, $"No product found for the provided id {request.Id}");
+
+                throw unknownProductException;
+            }
 
             _context.Products.Remove(entity);
 

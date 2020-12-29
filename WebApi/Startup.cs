@@ -37,6 +37,7 @@ namespace WebApi
                 options.SuppressAsyncSuffixInActionNames = false;
 
                 // Add filters for the application's exceptions
+                options.Filters.Add<ApplicationExceptionFilter>();
                 options.Filters.Add<ValidationExceptionFilter>();
             });
 
