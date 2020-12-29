@@ -1,15 +1,14 @@
-﻿using Application.Commons.Dtos;
-using Application.Commons.Interfaces;
+﻿using Application.Commons.Interfaces;
+using Application.Commons.Mappings;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Application.Commons.Mappings;
-using AutoMapper.QueryableExtensions;
+using Application.Products.Dtos;
 
 namespace Application.Products.Queries.GetAllProductsQuery
 {

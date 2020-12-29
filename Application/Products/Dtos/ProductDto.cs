@@ -1,6 +1,6 @@
 ﻿using Domain.Entities;
 
-namespace Application.Commons.Dtos
+namespace Application.Products.Dtos
 {
     /// <summary>
     /// <see cref="Product"/> DTO

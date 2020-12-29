@@ -1,11 +1,10 @@
-﻿using Application.Commons.Dtos;
-using AutoMapper;
+﻿using AutoMapper;
 using Domain.Entities;
 
-namespace Application.Commons.Mappings
+namespace Application.Products.Dtos
 {
     /// <summary>
-    /// <see cref="Product"/> mappings
+    /// <see cref="Product"/> mappings to DTOs
     /// </summary>
     public class ProductMapping : Profile
     {

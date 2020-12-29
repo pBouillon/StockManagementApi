@@ -1,4 +1,4 @@
-﻿using Application.Commons.Dtos;
+﻿using System;
 using Application.Commons.Interfaces;
 using AutoMapper;
 using Domain.Entities;
@@ -7,13 +7,15 @@ using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Commons.Exceptions;
+using Application.Products.Dtos;
 
 namespace Application.Products.Queries.GetProductQuery
 {
     /// <summary>
     /// CQRS query to retrieve a specific <see cref="ProductDto"/>
     /// </summary>
-    public class GetProductQuery : IRequest<ProductDto?>
+    public class GetProductQuery : IRequest<ProductDto>
     {
         /// <summary>
         /// Id of the product to retrieve
@@ -24,7 +26,7 @@ namespace Application.Products.Queries.GetProductQuery
     /// <summary>
     /// Handler for the <see cref="GetProductQuery"/>
     /// </summary>
-    public class GetProductQueryHandler : IRequestHandler<GetProductQuery, ProductDto?>
+    public class GetProductQueryHandler : IRequestHandler<GetProductQuery, ProductDto>
     {
         /// <summary>
         /// Application context
@@ -58,16 +60,24 @@ namespace Application.Products.Queries.GetProductQuery
         /// <param name="cancellationToken">
         /// <see cref="CancellationToken"/> used to asynchronously cancel the pending operation
         /// </param>
-        /// <returns>The <see cref="Product"/> if any matches the query; null otherwise</returns>
-        public Task<ProductDto?> Handle(GetProductQuery request, CancellationToken cancellationToken)
+        /// <returns>The <see cref="Product"/> of the given id, mapped to its <see cref="ProductDto"/></returns>
+        public Task<ProductDto> Handle(GetProductQuery request, CancellationToken cancellationToken)
         {
             var entity = _context.Products
                 .FirstOrDefault(product => product.Id == request.Id);
 
+            if (entity == null)
+            {
+                var unknownProductException = new NotFoundException(nameof(Product), new { request.Id });
+
+                _logger.LogError(unknownProductException, $"No product found for the provided id {request.Id}");
+
+                throw unknownProductException;
+            }
+
             _logger.LogDebug($"Product of id { request.Id } retrieved { entity }");
 
-            return Task.FromResult(
-                _mapper.Map<ProductDto>(entity));
+            return Task.FromResult(_mapper.Map<ProductDto>(entity));
         }
     }
 }
