@@ -8,18 +8,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Commons.Mappings;
+using AutoMapper.QueryableExtensions;
 
 namespace Application.Products.Queries.GetAllProductsQuery
 {
     /// <summary>
     /// CQRS query to fetch all the <see cref="Product"/>
     /// </summary>
-    public class GetAllProductsQuery : IRequest<List<ProductDto>> { }
+    public class GetAllProductsQuery : IRequest<PaginatedList<ProductDto>>
+    {
+        public int PageNumber { get; set; } = 1;
+
+        public int PageSize { get; set; } = 10;
+    }
 
     /// <summary>
     /// Handler for the <see cref="GetAllProductsQuery"/>
     /// </summary>
-    public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, List<ProductDto>>
+    public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, PaginatedList<ProductDto>>
     {
         /// <summary>
         /// Application context
@@ -53,13 +60,19 @@ namespace Application.Products.Queries.GetAllProductsQuery
         /// <see cref="CancellationToken"/> used to asynchronously cancel the pending operation
         /// </param>
         /// <returns>An array of all the <see cref="Product"/> stored</returns>
-        public Task<List<ProductDto>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
+        public async Task<PaginatedList<ProductDto>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
         {
-            var entities = _context.Products.AsEnumerable();
+            var paginatedEntities = await _context.Products
+                .OrderBy(product => product.Id)
+                .ProjectTo<ProductDto>(_mapper.ConfigurationProvider)
+                .ToPaginatedListAsync(request.PageNumber, request.PageSize);
 
-            _logger.LogDebug("All product retrieved");
+            _logger.LogInformation(
+                $"Retrieved {paginatedEntities.Items.Count} product(s) " +
+                $"from the page {paginatedEntities.PageIndex}/{paginatedEntities.TotalPages} " +
+                $"({request.PageSize} item(s) displayed per pages)");
 
-            return Task.FromResult(_mapper.Map<List<ProductDto>>(entities));
+            return paginatedEntities;
         }
     }
 }
