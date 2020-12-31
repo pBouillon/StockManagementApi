@@ -16,4 +16,4 @@ jobs:
         dotnet-version: 5.0.101
         
     - name: Build with .NET 5
-      run: dotnet build WebApi/WebApi.sln --configuration Release
+      run: dotnet build Api.sln --configuration Release
