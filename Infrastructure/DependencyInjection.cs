@@ -1,4 +1,5 @@
-﻿using Application.Commons.Interfaces;
+﻿using System.Reflection;
+using Application.Commons.Interfaces;
 using Infrastructure.Persistence;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
@@ -35,10 +36,18 @@ namespace Infrastructure
         /// <param name="configuration">Accessor to the configuration file</param>
         private static void AddPersistence(this IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("DefaultConnection");
-
-            services.AddDbContext<ApplicationDbContext>(options
-                => options.UseSqlite(connectionString));
+            if (configuration.GetValue<bool>("UseInMemoryDatabase"))
+            {
+                services.AddDbContext<ApplicationDbContext>(options =>
+                    options.UseInMemoryDatabase("StockManagementDatabase"));
+            }
+            else
+            {
+                services.AddDbContext<ApplicationDbContext>(options
+                    => options.UseSqlite(
+                        configuration.GetConnectionString("DefaultConnection"),
+                        builder => builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+            }
 
             services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
         }
