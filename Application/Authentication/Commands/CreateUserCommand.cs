@@ -3,6 +3,7 @@ using Application.Commons.Interfaces;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Commons.Exceptions;
 
 namespace Application.Authentication.Commands
 {
@@ -22,7 +23,13 @@ namespace Application.Authentication.Commands
 
         public async Task<CreatedUserDto> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
-            await _identityService.CreateUserAsync(request.Username, request.Password);
+            // TODO: logging
+            var result = await _identityService.CreateUserAsync(request.Username, request.Password);
+
+            if (!result.Succeeded)
+            {
+                throw new IdentityException($"Unable to create the user {request.Username}", result);
+            }
 
             return new CreatedUserDto
             {

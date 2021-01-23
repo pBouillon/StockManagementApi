@@ -8,6 +8,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Application.Commons.Models;
+using IdentityResult = Application.Commons.Models.IdentityResult;
 
 namespace Infrastructure.Identity
 {
@@ -21,14 +23,16 @@ namespace Infrastructure.Identity
         public IdentityService(UserManager<ApplicationUser> userManager)
             => _userManager = userManager;
 
-        public async Task CreateUserAsync(string username, string password)
+        public async Task<IdentityResult> CreateUserAsync(string username, string password)
         {
             var user = new ApplicationUser
             {
                 UserName = username,
             };
 
-            await _userManager.CreateAsync(user, password);
+            var result = await _userManager.CreateAsync(user, password);
+
+            return result.ToApplicationResult();
         }
 
         /// <summary>

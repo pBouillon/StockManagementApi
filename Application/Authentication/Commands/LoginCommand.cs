@@ -22,6 +22,7 @@ namespace Application.Authentication.Commands
 
         public async Task<AuthenticationResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
+            // TODO: handle failing auth
             var (token, expireOn) = await _identityService.GetJwtForUserAsync(request.Username, request.Password);
             
             return new AuthenticationResponse

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Application.Commons.Models;
 
 namespace Application.Commons.Interfaces
 {
@@ -14,7 +15,7 @@ namespace Application.Commons.Interfaces
         /// <param name="username"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        Task CreateUserAsync(string username, string password);
+        Task<IdentityResult> CreateUserAsync(string username, string password);
      
         /// <summary>
         /// TODO

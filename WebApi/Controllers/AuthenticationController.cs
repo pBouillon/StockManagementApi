@@ -16,10 +16,12 @@ namespace WebApi.Controllers
         public async Task<ActionResult<AuthenticationResponse>> CreateJwt(LoginCommand command)
             => Ok(await Mediator.Send(command));
 
+        // TODO: move to the appropriate controller
         [HttpPost("/user")]
         public async Task<ActionResult<CreatedUserDto>> CreateUser(CreateUserCommand command)
             => Ok(await Mediator.Send(command));
 
+        // TODO: remove (for test purposes only)
         [Authorize(Roles = "Administrator")]
         [HttpGet]
         public IActionResult AuthExample()

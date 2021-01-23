@@ -55,7 +55,7 @@ namespace Infrastructure
                 {
                     options.SaveToken = true;
                     options.RequireHttpsMetadata = false;
-                    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
+                    options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
                         ValidateAudience = true,
@@ -83,7 +83,6 @@ namespace Infrastructure
 
             services.AddScoped<IDateTime, DateTimeService>();
         }
-
 
         /// <summary>
         /// Setup the database services in the dependency injection container
