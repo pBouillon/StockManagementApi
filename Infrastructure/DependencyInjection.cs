@@ -1,10 +1,14 @@
-﻿using System.Reflection;
-using Application.Commons.Interfaces;
+﻿using Application.Commons.Interfaces;
+using Infrastructure.Identity;
 using Infrastructure.Persistence;
 using Infrastructure.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace Infrastructure
 {
@@ -24,6 +28,46 @@ namespace Infrastructure
         {
             services.AddPersistence(configuration);
 
+
+
+            // TODO: sub-method
+            //services
+            //    .AddDefaultIdentity<ApplicationUser>()
+            //    .AddRoles<IdentityRole>()
+            //    .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            //services.AddIdentityServer()
+            //    .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
+
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
+
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options =>
+                {
+                    options.SaveToken = true;
+                    options.RequireHttpsMetadata = false;
+                    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidAudience = "http://localhost",
+                        ValidIssuer = "http://localhost",
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("MyApplicationKey"))
+                    };
+                });
+
+            services.AddScoped<IIdentityService, IdentityService>();
+
+            
+            
+            
             services.AddScoped<IDateTime, DateTimeService>();
         }
 

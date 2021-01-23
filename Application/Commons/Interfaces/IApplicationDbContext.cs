@@ -22,6 +22,6 @@ namespace Application.Commons.Interfaces
         /// <see cref="CancellationToken"/> used to asynchronously cancel the pending operation
         /// </param>
         /// <returns>A task wrapping the result of the base operation</returns>
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

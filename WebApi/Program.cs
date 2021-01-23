@@ -6,6 +6,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
+using Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity;
 
 namespace WebApi
 {
@@ -53,6 +55,17 @@ namespace WebApi
                 logger.LogError(ex, "An error occurred while migrating or seeding the database.");
                 throw;
             }
+        }
+
+        private static async Task SeedDatabaseAsync(IServiceProvider services)
+        {
+            var context = services.GetRequiredService<ApplicationDbContext>();
+
+            var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+            await ApplicationDbContextSeed.SeedDefaultUserAsync(userManager, roleManager);
+            await ApplicationDbContextSeed.SeedSampleDataAsync(context);
         }
     }
 }
