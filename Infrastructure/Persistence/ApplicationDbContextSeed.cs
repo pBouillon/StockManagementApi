@@ -33,7 +33,7 @@ namespace Infrastructure.Persistence
 
         public static async Task SeedSampleDataAsync(IApplicationDbContext context)
         {
-            if (!context.Products.Any())
+            if (context.Products.Any())
             {
                 return;
             }

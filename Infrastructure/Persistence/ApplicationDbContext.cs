@@ -24,7 +24,7 @@ namespace Infrastructure.Persistence
         private readonly ILogger<ApplicationDbContext> _logger;
 
         ///  <inheritdoc cref="IApplicationDbContext.Products"/>
-        public DbSet<Product>? Products { get; set; }
+        public DbSet<Product> Products { get; set; }
 
         /// <summary>
         /// Default constructor to create the context
