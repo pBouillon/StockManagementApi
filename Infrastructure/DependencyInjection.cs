@@ -1,4 +1,5 @@
-﻿using Application.Commons.Interfaces;
+﻿using System;
+using Application.Commons.Interfaces;
 using Infrastructure.Identity;
 using Infrastructure.Persistence;
 using Infrastructure.Services;
@@ -17,31 +18,32 @@ namespace Infrastructure
     /// </summary>
     public static class DependencyInjection
     {
-        /// <summary>
-        /// Add all services of the Application layer
-        /// </summary>
-        /// <param name="services">
-        /// <see cref="IServiceCollection"/> used to setup the dependency injection container
-        /// </param>
-        /// <param name="configuration">Accessor to the configuration file</param>
-        public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+        private static void AddAndConfigureIdentity(IServiceCollection services)
         {
-            services.AddPersistence(configuration);
-
-
-
-            // TODO: sub-method
-            //services
-            //    .AddDefaultIdentity<ApplicationUser>()
-            //    .AddRoles<IdentityRole>()
-            //    .AddEntityFrameworkStores<ApplicationDbContext>();
-
-            //services.AddIdentityServer()
-            //    .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
-
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
+
+            services.Configure<IdentityOptions>(options =>
+            {
+                // Password settings
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequiredLength = 12;
+                options.Password.RequiredUniqueChars = 1;
+
+                // Lockout settings
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.AllowedForNewUsers = true;
+
+                // User settings
+                options.User.AllowedUserNameCharacters =
+                    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                options.User.RequireUniqueEmail = false;
+            });
 
             services.AddAuthentication(options =>
                 {
@@ -64,12 +66,24 @@ namespace Infrastructure
                 });
 
             services.AddScoped<IIdentityService, IdentityService>();
+        }
+        
+        /// <summary>
+        /// Add all services of the Application layer
+        /// </summary>
+        /// <param name="services">
+        /// <see cref="IServiceCollection"/> used to setup the dependency injection container
+        /// </param>
+        /// <param name="configuration">Accessor to the configuration file</param>
+        public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddPersistence(configuration);
 
-            
-            
-            
+            AddAndConfigureIdentity(services);
+
             services.AddScoped<IDateTime, DateTimeService>();
         }
+
 
         /// <summary>
         /// Setup the database services in the dependency injection container
