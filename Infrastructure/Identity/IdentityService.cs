@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,7 +25,7 @@ namespace Infrastructure.Identity
         {
             var user = new ApplicationUser
             {
-                UserName = username
+                UserName = username,
             };
 
             await _userManager.CreateAsync(user, password);
@@ -82,11 +83,15 @@ namespace Infrastructure.Identity
         /// <returns></returns>
         private async Task<List<Claim>> GetClaimsAsync(ApplicationUser user)
         {
-            var userClaims = new List<Claim>();
+            var userClaims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.UserName)
+            };
 
             userClaims.AddRange(await _userManager.GetClaimsAsync(user));
 
-            userClaims.Add(new Claim(ClaimTypes.Name, user.UserName));
+            userClaims.AddRange((await _userManager.GetRolesAsync(user))
+                .Select(role => new Claim(ClaimTypes.Role, role)));
 
             return userClaims;
         }

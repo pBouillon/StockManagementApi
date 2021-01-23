@@ -1,9 +1,9 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Application.Commons.Interfaces;
+﻿using Application.Commons.Interfaces;
 using Domain.Entities;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Infrastructure.Persistence
 {
@@ -21,7 +21,7 @@ namespace Infrastructure.Persistence
 
             var administrator = new ApplicationUser
             {
-                UserName = "administrator",
+                UserName = "Administrator",
             };
 
             if (userManager.Users.All(user => user.UserName != administrator.UserName))

@@ -20,7 +20,7 @@ namespace WebApi.Controllers
         public async Task<ActionResult<CreatedUserDto>> CreateUser(CreateUserCommand command)
             => Ok(await Mediator.Send(command));
 
-        [Authorize]
+        [Authorize(Roles = "Administrator")]
         [HttpGet]
         public IActionResult AuthExample()
             => Ok();

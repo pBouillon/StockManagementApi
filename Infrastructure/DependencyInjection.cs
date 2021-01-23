@@ -1,5 +1,4 @@
-﻿using System;
-using Application.Commons.Interfaces;
+﻿using Application.Commons.Interfaces;
 using Infrastructure.Identity;
 using Infrastructure.Persistence;
 using Infrastructure.Services;
@@ -9,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Text;
 
 namespace Infrastructure
@@ -18,11 +18,16 @@ namespace Infrastructure
     /// </summary>
     public static class DependencyInjection
     {
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="services"></param>
         private static void AddAndConfigureIdentity(IServiceCollection services)
         {
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+                .AddDefaultTokenProviders()
+                .AddRoles<IdentityRole>();
 
             services.Configure<IdentityOptions>(options =>
             {
@@ -38,11 +43,6 @@ namespace Infrastructure
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.AllowedForNewUsers = true;
-
-                // User settings
-                options.User.AllowedUserNameCharacters =
-                    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-                options.User.RequireUniqueEmail = false;
             });
 
             services.AddAuthentication(options =>
