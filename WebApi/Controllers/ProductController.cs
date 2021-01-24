@@ -2,12 +2,12 @@
 using Application.Products.Commands.CreateProductCommand;
 using Application.Products.Commands.DeleteProductCommand;
 using Application.Products.Commands.UpdateProductCommand;
+using Application.Products.Dtos;
 using Application.Products.Queries.GetAllProductsQuery;
 using Application.Products.Queries.GetProductQuery;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using Application.Products.Dtos;
 
 namespace WebApi.Controllers
 {

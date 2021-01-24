@@ -1,4 +1,6 @@
-﻿using Application.Commons.Interfaces;
+﻿using Application.Authentication.Dtos;
+using Application.Commons.Interfaces;
+using Application.Commons.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -8,7 +10,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Application.Commons.Models;
 using IdentityResult = Application.Commons.Models.IdentityResult;
 
 namespace Infrastructure.Identity
@@ -41,11 +42,15 @@ namespace Infrastructure.Identity
         /// <param name="username"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public async Task<(string, DateTime)> GetJwtForUserAsync(string username, string password)
+        public async Task<IdentityResult<AuthenticationResponse>> GetJwtForUserAsync(string username, string password)
         {
-            var user = await GetAuthenticatedUserAsync(username, password);
+            var userAuthentication = await GetAuthenticatedUserAsync(username, password);
 
-            return await GenerateJwtForUserAsync(user);
+            return !userAuthentication.Succeeded 
+                ? IdentityResult<AuthenticationResponse>.Failure(
+                    userAuthentication.Errors)
+                : IdentityResult<AuthenticationResponse>.Success(
+                    await GenerateJwtForUserAsync(userAuthentication.Payload));
         }
 
         /// <summary>
@@ -53,7 +58,7 @@ namespace Infrastructure.Identity
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        private async Task<(string, DateTime)> GenerateJwtForUserAsync(ApplicationUser user)
+        private async Task<AuthenticationResponse> GenerateJwtForUserAsync(ApplicationUser user)
         {
             var userClaims = await GetClaimsAsync(user);
 
@@ -74,10 +79,11 @@ namespace Infrastructure.Identity
                     signingAlgorithm)
             );
 
-            return (
-                new JwtSecurityTokenHandler().WriteToken(token),
-                token.ValidTo
-            );
+            return new AuthenticationResponse
+            {
+                ExpireOn = token.ValidTo,
+                Token = new JwtSecurityTokenHandler().WriteToken(token)
+            };
         }
 
         /// <summary>
@@ -106,23 +112,20 @@ namespace Infrastructure.Identity
         /// <param name="username"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        private async Task<ApplicationUser> GetAuthenticatedUserAsync(string username, string password)
+        private async Task<IdentityResult<ApplicationUser>> GetAuthenticatedUserAsync(
+            string username, string password)
         {
             var user = await _userManager.FindByNameAsync(username);
 
-            if (user == null)
+            // TODO: account lock or delay
+
+            if (user == null
+                || !await _userManager.CheckPasswordAsync(user, password))
             {
-                // TODO: custom exception
-                throw new Exception("No user found for this name");
+                return IdentityResult<ApplicationUser>.Failure(new[] {"Invalid credentials"});
             }
 
-            if (!await _userManager.CheckPasswordAsync(user, password))
-            {
-                // TODO: custom exception
-                throw new Exception("Incorrect password for the provided user");
-            }
-
-            return user;
+            return IdentityResult<ApplicationUser>.Success(user);
         }
     }
 }

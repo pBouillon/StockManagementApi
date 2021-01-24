@@ -1,4 +1,5 @@
 ﻿using Application.Authentication.Dtos;
+using Application.Commons.Exceptions;
 using Application.Commons.Interfaces;
 using MediatR;
 using System.Threading;
@@ -22,14 +23,16 @@ namespace Application.Authentication.Commands
 
         public async Task<AuthenticationResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
-            // TODO: handle failing auth
-            var (token, expireOn) = await _identityService.GetJwtForUserAsync(request.Username, request.Password);
-            
-            return new AuthenticationResponse
+            var result = await _identityService.GetJwtForUserAsync(request.Username, request.Password);
+
+            if (!result.Succeeded)
             {
-                Token = token,
-                ExpireOn = expireOn
-            };
+                throw new IdentityException(
+                    $"Unable to forge a JWT for the user '{ request.Username }'",
+                    result.AsIdentityResult());
+            }
+            
+            return result.Payload;
         }
     }
 }

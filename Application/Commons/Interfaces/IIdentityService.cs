@@ -1,6 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using Application.Authentication.Dtos;
 using Application.Commons.Models;
+using System.Threading.Tasks;
 
 namespace Application.Commons.Interfaces
 {
@@ -23,6 +23,6 @@ namespace Application.Commons.Interfaces
         /// <param name="username"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        Task<(string, DateTime)> GetJwtForUserAsync(string username, string password);
+        Task<IdentityResult<AuthenticationResponse>> GetJwtForUserAsync(string username, string password);
     }
 }

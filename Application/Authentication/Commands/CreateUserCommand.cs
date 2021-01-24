@@ -1,9 +1,9 @@
 ﻿using Application.Authentication.Dtos;
+using Application.Commons.Exceptions;
 using Application.Commons.Interfaces;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
-using Application.Commons.Exceptions;
 
 namespace Application.Authentication.Commands
 {
