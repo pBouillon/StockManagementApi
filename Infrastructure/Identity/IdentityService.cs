@@ -19,10 +19,15 @@ namespace Infrastructure.Identity
     /// </summary>
     public class IdentityService : IIdentityService
     {
+        private readonly IdentityConfiguration _identityConfiguration;
+
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public IdentityService(UserManager<ApplicationUser> userManager)
-            => _userManager = userManager;
+        public IdentityService(UserManager<ApplicationUser> userManager, IdentityConfiguration identityConfiguration)
+        {
+            _identityConfiguration = identityConfiguration;
+            _userManager = userManager;
+        }
 
         public async Task<IdentityResult> CreateUserAsync(string username, string password)
         {
@@ -62,27 +67,23 @@ namespace Infrastructure.Identity
         {
             var userClaims = await GetClaimsAsync(user);
 
-            // TODO to cste
-            const string key = "MyApplicationKey";
-            const string signingAlgorithm = SecurityAlgorithms.HmacSha256;
-            const int daysBeforeExpiration = 5;
-            const string issuer = "http://localhost";
-            const string audience = "http://localhost";
+            var expiresOn = DateTime.Now.AddDays(_identityConfiguration.DaysBeforeExpiration);
 
             var token = new JwtSecurityToken(
-                issuer: issuer,
-                audience: audience,
-                expires: DateTime.Now.AddDays(daysBeforeExpiration),
+                _identityConfiguration.TokenIssuer,
+                _identityConfiguration.TokenAudience,
+                expires: expiresOn,
                 claims: userClaims,
                 signingCredentials: new SigningCredentials(
-                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
-                    signingAlgorithm)
+                    _identityConfiguration.SecurityKey,
+                    _identityConfiguration.SecurityAlgorithm)
             );
 
             return new AuthenticationResponse
             {
                 ExpireOn = token.ValidTo,
-                Token = new JwtSecurityTokenHandler().WriteToken(token)
+                Token = new JwtSecurityTokenHandler()
+                    .WriteToken(token)
             };
         }
 

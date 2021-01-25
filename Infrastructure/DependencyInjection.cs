@@ -22,13 +22,22 @@ namespace Infrastructure
         /// TODO
         /// </summary>
         /// <param name="services"></param>
-        private static void AddAndConfigureIdentity(IServiceCollection services)
+        /// <param name="configuration"></param>
+        private static void AddAndConfigureIdentity(IServiceCollection services, IConfiguration configuration)
         {
+            // Initialize Identity
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders()
                 .AddRoles<IdentityRole>();
 
+            // Register the Identity configuration from appsettings.json
+            var section = configuration.GetSection(nameof(IdentityConfiguration));
+            var identityConfiguration = section.Get<IdentityConfiguration>();
+
+            services.AddSingleton(identityConfiguration);
+
+            // Configure the Identity options
             services.Configure<IdentityOptions>(options =>
             {
                 // Password settings
@@ -45,6 +54,7 @@ namespace Infrastructure
                 options.Lockout.AllowedForNewUsers = true;
             });
 
+            // Configure the Identity authentication
             services.AddAuthentication(options =>
                 {
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -59,12 +69,13 @@ namespace Infrastructure
                     {
                         ValidateIssuer = true,
                         ValidateAudience = true,
-                        ValidAudience = "http://localhost",
-                        ValidIssuer = "http://localhost",
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("MyApplicationKey"))
+                        ValidAudience = identityConfiguration.TokenAudience,
+                        ValidIssuer = identityConfiguration.TokenIssuer,
+                        IssuerSigningKey = identityConfiguration.SecurityKey
                     };
                 });
 
+            // Register the associated services
             services.AddScoped<IIdentityService, IdentityService>();
         }
         
@@ -79,7 +90,7 @@ namespace Infrastructure
         {
             services.AddPersistence(configuration);
 
-            AddAndConfigureIdentity(services);
+            AddAndConfigureIdentity(services, configuration);
 
             services.AddScoped<IDateTime, DateTimeService>();
         }
