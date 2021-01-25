@@ -1,29 +1,28 @@
 ﻿using Application.Authentication.Commands;
-using Application.Authentication.Dtos;
+using Application.Commons.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using Application.Commons.Models;
 
 namespace WebApi.Controllers
 {
     /// <summary>
-    /// TODO
+    /// REST API controller for user's authentication
     /// </summary>
     public class AuthenticationController : ApiController
     {
         /// <summary>
-        /// TODO
+        /// Default constructor
         /// </summary>
-        /// <param name="mediator"></param>
+        /// <param name="mediator">Mediator object to send CQRS operations to the Application layer</param>
         public AuthenticationController(ISender mediator)
             : base(mediator) { }
 
         /// <summary>
-        /// TODO
+        /// Authenticate a user and forge his JWT
         /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
+        /// <param name="command">Payload from which the user will be authenticated</param>
+        /// <returns>The user's authentication data</returns>
         [HttpPost]
         public async Task<ActionResult<AuthenticationResponse>> LogUserInAsync(LoginCommand command)
             => Ok(await Mediator.Send(command));
