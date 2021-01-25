@@ -1,4 +1,5 @@
-﻿using Application.Commons.Interfaces;
+﻿using System;
+using Application.Commons.Interfaces;
 using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +18,7 @@ namespace Application.Products.Commands.DeleteProductCommand
         /// <summary>
         /// Id of the <see cref="Product"/> to delete
         /// </summary>
-        public int Id { get; set; }
+        public Guid Id { get; set; }
     }
 
     /// <summary>

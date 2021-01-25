@@ -1,13 +1,14 @@
-﻿using Application.Commons.Interfaces;
+﻿using Application.Commons.Exceptions;
+using Application.Commons.Interfaces;
+using Application.Products.Dtos;
 using AutoMapper;
 using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Application.Commons.Exceptions;
-using Application.Products.Dtos;
 
 namespace Application.Products.Commands.UpdateProductCommand
 {
@@ -19,7 +20,7 @@ namespace Application.Products.Commands.UpdateProductCommand
         /// <summary>
         /// Id of the <see cref="Product"/> to update
         /// </summary>
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// New name of the product

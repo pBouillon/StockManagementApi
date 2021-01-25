@@ -5,6 +5,7 @@ using AutoMapper;
 using Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace Application.Products.Queries.GetProductQuery
         /// <summary>
         /// Id of the product to retrieve
         /// </summary>
-        public int Id { get; set; }
+        public Guid Id { get; set; }
     }
 
     /// <summary>
