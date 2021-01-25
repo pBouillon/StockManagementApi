@@ -1,5 +1,6 @@
 ﻿using Application.Commons.Interfaces;
 using Application.Commons.Models;
+using IdentityModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -103,13 +104,14 @@ namespace Infrastructure.Identity
         {
             var userClaims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.UserName)
+                new Claim(JwtClaimTypes.Name, user.UserName),
+                new Claim(JwtClaimTypes.Subject, user.Id)
             };
 
             userClaims.AddRange(await _userManager.GetClaimsAsync(user));
 
             userClaims.AddRange((await _userManager.GetRolesAsync(user))
-                .Select(role => new Claim(ClaimTypes.Role, role)));
+                .Select(role => new Claim(JwtClaimTypes.Role, role)));
 
             return userClaims;
         }
