@@ -63,7 +63,7 @@ namespace Application.Authentication.Commands
             if (!result.Succeeded)
             {
                 var identityException = new IdentityException(
-                    $"Unable to create the user {request.Username}", result);
+                    $"Unable to create the user {request.Username}", result.Errors);
 
                 _logger.LogError(identityException.Message, identityException);
 

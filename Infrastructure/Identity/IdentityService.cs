@@ -1,5 +1,4 @@
-﻿using Application.Authentication.Dtos;
-using Application.Commons.Interfaces;
+﻿using Application.Commons.Interfaces;
 using Application.Commons.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -8,27 +7,35 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using IdentityResult = Application.Commons.Models.IdentityResult;
 
 namespace Infrastructure.Identity
 {
-    /// <summary>
-    /// TODO
-    /// </summary>
+    /// <inheritdoc cref="IIdentityService"/>
     public class IdentityService : IIdentityService
     {
+        /// <summary>
+        /// Configuration class, holding the parameters to initialize IdentityServer's services
+        /// </summary>
         private readonly IdentityConfiguration _identityConfiguration;
 
+        /// <summary>
+        /// IdentityServer's user manager class
+        /// </summary>
         private readonly UserManager<ApplicationUser> _userManager;
 
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        /// <param name="userManager">
+        /// Configuration class, holding the parameters to initialize IdentityServer's services
+        /// </param>
+        /// <param name="identityConfiguration">IdentityServer's user manager class</param>
         public IdentityService(UserManager<ApplicationUser> userManager, IdentityConfiguration identityConfiguration)
-        {
-            _identityConfiguration = identityConfiguration;
-            _userManager = userManager;
-        }
+            => (_identityConfiguration, _userManager) = (identityConfiguration, userManager);
 
+        /// <inheritdoc />
         public async Task<IdentityResult> CreateUserAsync(string username, string password)
         {
             var user = new ApplicationUser
@@ -40,30 +47,13 @@ namespace Infrastructure.Identity
 
             return result.ToApplicationResult();
         }
-
+        
         /// <summary>
-        /// TODO
+        /// Generate a JWT for a <see cref="ApplicationUser"/>
         /// </summary>
-        /// <param name="username"></param>
-        /// <param name="password"></param>
-        /// <returns></returns>
-        public async Task<IdentityResult<AuthenticationResponseDto>> GetJwtForUserAsync(string username, string password)
-        {
-            var userAuthentication = await GetAuthenticatedUserAsync(username, password);
-
-            return !userAuthentication.Succeeded 
-                ? IdentityResult<AuthenticationResponseDto>.Failure(
-                    userAuthentication.Errors)
-                : IdentityResult<AuthenticationResponseDto>.Success(
-                    await GenerateJwtForUserAsync(userAuthentication.Payload));
-        }
-
-        /// <summary>
-        /// TODO
-        /// </summary>
-        /// <param name="user"></param>
-        /// <returns></returns>
-        private async Task<AuthenticationResponseDto> GenerateJwtForUserAsync(ApplicationUser user)
+        /// <param name="user">Registered user for whom the JWT will be created</param>
+        /// <returns>The forged JWT and its associated data</returns>
+        private async Task<AuthenticationResponse> GenerateJwtForUserAsync(ApplicationUser user)
         {
             var userClaims = await GetClaimsAsync(user);
 
@@ -79,7 +69,7 @@ namespace Infrastructure.Identity
                     _identityConfiguration.SecurityAlgorithm)
             );
 
-            return new AuthenticationResponseDto
+            return new AuthenticationResponse
             {
                 ExpireOn = token.ValidTo,
                 Token = new JwtSecurityTokenHandler()
@@ -88,9 +78,26 @@ namespace Infrastructure.Identity
         }
 
         /// <summary>
-        /// TODO
+        /// Retrieve the registered <see cref="ApplicationUser"/> matching the provided credentials
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="username">User name</param>
+        /// <param name="password">Password of the user, in plain text</param>
+        /// <returns>An <see cref="IdentityResult"/> holding the result</returns>
+        private async Task<IdentityResult<ApplicationUser>> GetAuthenticatedUserAsync(
+            string username, string password)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+
+            return user != null
+                   && await _userManager.CheckPasswordAsync(user, password)
+                ? IdentityResult<ApplicationUser>.Success(user)
+                : IdentityResult<ApplicationUser>.Failure(new[] { "Invalid credentials" });
+        }
+
+        /// <summary>
+        /// Get the claims associated to a registered <inheritdoc cref="ApplicationUser"/>
+        /// </summary>
+        /// <param name="user">Registered user for which the claim will be retrieved</param>
         /// <returns></returns>
         private async Task<List<Claim>> GetClaimsAsync(ApplicationUser user)
         {
@@ -106,27 +113,17 @@ namespace Infrastructure.Identity
 
             return userClaims;
         }
-
-        /// <summary>
-        /// TODO
-        /// </summary>
-        /// <param name="username"></param>
-        /// <param name="password"></param>
-        /// <returns></returns>
-        private async Task<IdentityResult<ApplicationUser>> GetAuthenticatedUserAsync(
-            string username, string password)
+       
+        /// <inheritdoc />
+        public async Task<IdentityResult<AuthenticationResponse>> GetJwtForUserAsync(string username, string password)
         {
-            var user = await _userManager.FindByNameAsync(username);
+            var userAuthentication = await GetAuthenticatedUserAsync(username, password);
 
-            // TODO: account lock or delay
-
-            if (user == null
-                || !await _userManager.CheckPasswordAsync(user, password))
-            {
-                return IdentityResult<ApplicationUser>.Failure(new[] {"Invalid credentials"});
-            }
-
-            return IdentityResult<ApplicationUser>.Success(user);
+            return !userAuthentication.Succeeded
+                ? IdentityResult<AuthenticationResponse>.Failure(
+                    userAuthentication.Errors)
+                : IdentityResult<AuthenticationResponse>.Success(
+                    await GenerateJwtForUserAsync(userAuthentication.Payload!));
         }
     }
 }

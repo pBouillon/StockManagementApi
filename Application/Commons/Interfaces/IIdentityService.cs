@@ -24,7 +24,7 @@ namespace Application.Commons.Interfaces
         /// </summary>
         /// <param name="username">User name</param>
         /// <param name="password">The password of the user, in clear text</param>
-        /// <returns>An awaitable task of the user's JWT in an <see cref="AuthenticationResponseDto"/></returns>
-        Task<IdentityResult<AuthenticationResponseDto>> GetJwtForUserAsync(string username, string password);
+        /// <returns>An awaitable task of the user's JWT in an <see cref="AuthenticationResponse"/></returns>
+        Task<IdentityResult<AuthenticationResponse>> GetJwtForUserAsync(string username, string password);
     }
 }

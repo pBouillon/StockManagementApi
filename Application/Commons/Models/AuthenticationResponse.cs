@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace Application.Authentication.Dtos
+namespace Application.Commons.Models
 {
     /// <summary>
-    /// User's authentication response, holding the user's JWT information
+    /// User authentication response, holding the user's JWT information
     /// </summary>
-    public class AuthenticationResponseDto
+    public class AuthenticationResponse
     {
         /// <summary>
         /// <see cref="DateTime"/> on which the forged JWT will expire

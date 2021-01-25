@@ -1,6 +1,6 @@
-﻿using Application.Authentication.Dtos;
-using Application.Commons.Exceptions;
+﻿using Application.Commons.Exceptions;
 using Application.Commons.Interfaces;
+using Application.Commons.Models;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using System.Threading;
@@ -11,7 +11,7 @@ namespace Application.Authentication.Commands
     /// <summary>
     /// CQRS command to log a user in and forge his JWT
     /// </summary>
-    public class LoginCommand : IRequest<AuthenticationResponseDto>
+    public class LoginCommand : IRequest<AuthenticationResponse>
     {
         /// <summary>
         /// Name of the user
@@ -27,7 +27,7 @@ namespace Application.Authentication.Commands
     /// <summary>
     /// Handler for the <see cref="LoginCommand"/>
     /// </summary>
-    public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthenticationResponseDto>
+    public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthenticationResponse>
     {
         /// <summary>
         /// IdentityService instance to manage the authentication logic
@@ -54,15 +54,15 @@ namespace Application.Authentication.Commands
         /// <param name="cancellationToken">
         /// <see cref="CancellationToken"/> used to asynchronously cancel the pending operation
         /// </param>
-        /// <returns>The <see cref="AuthenticationResponseDto"/> holding the user's JWT</returns>
-        public async Task<AuthenticationResponseDto> Handle(LoginCommand request, CancellationToken cancellationToken)
+        /// <returns>The <see cref="AuthenticationResponse"/> holding the user's JWT</returns>
+        public async Task<AuthenticationResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
             var result = await _identityService.GetJwtForUserAsync(request.Username, request.Password);
 
             if (!result.Succeeded)
             {
                 var identityException = new IdentityException(
-                    $"Unable to forge a JWT for the user '{ request.Username }'", result);
+                    $"Unable to forge a JWT for the user '{ request.Username }'", result.Errors);
 
                 _logger.LogError(identityException.Message);
 

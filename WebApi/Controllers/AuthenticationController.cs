@@ -3,6 +3,7 @@ using Application.Authentication.Dtos;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using Application.Commons.Models;
 
 namespace WebApi.Controllers
 {
@@ -24,7 +25,7 @@ namespace WebApi.Controllers
         /// <param name="command"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult<AuthenticationResponseDto>> LogUserInAsync(LoginCommand command)
+        public async Task<ActionResult<AuthenticationResponse>> LogUserInAsync(LoginCommand command)
             => Ok(await Mediator.Send(command));
     }
 }

@@ -9,7 +9,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Text;
 
 namespace Infrastructure
 {
@@ -19,23 +18,26 @@ namespace Infrastructure
     public static class DependencyInjection
     {
         /// <summary>
-        /// TODO
+        /// Add IdentityServer's services
         /// </summary>
-        /// <param name="services"></param>
-        /// <param name="configuration"></param>
-        private static void AddAndConfigureIdentity(IServiceCollection services, IConfiguration configuration)
+        /// <param name="services">
+        /// <see cref="IServiceCollection"/> used to setup the dependency injection container
+        /// </param>
+        /// <param name="configuration">Accessor to the configuration file</param>
+        private static void AddIdentityServer(IServiceCollection services, IConfiguration configuration)
         {
+            // Register the Identity configuration from appsettings.json
+            var identityConfiguration = configuration
+                .GetSection(nameof(IdentityConfiguration))
+                .Get<IdentityConfiguration>();
+
+            services.AddSingleton(identityConfiguration);
+
             // Initialize Identity
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders()
                 .AddRoles<IdentityRole>();
-
-            // Register the Identity configuration from appsettings.json
-            var section = configuration.GetSection(nameof(IdentityConfiguration));
-            var identityConfiguration = section.Get<IdentityConfiguration>();
-
-            services.AddSingleton(identityConfiguration);
 
             // Configure the Identity options
             services.Configure<IdentityOptions>(options =>
@@ -64,7 +66,7 @@ namespace Infrastructure
                 .AddJwtBearer(options =>
                 {
                     options.SaveToken = true;
-                    options.RequireHttpsMetadata = false;
+                    options.RequireHttpsMetadata = identityConfiguration.TokenRequireHttpsMetadata;
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
@@ -80,7 +82,7 @@ namespace Infrastructure
         }
         
         /// <summary>
-        /// Add all services of the Application layer
+        /// Add all services of the Infrastructure layer
         /// </summary>
         /// <param name="services">
         /// <see cref="IServiceCollection"/> used to setup the dependency injection container
@@ -90,7 +92,7 @@ namespace Infrastructure
         {
             services.AddPersistence(configuration);
 
-            AddAndConfigureIdentity(services, configuration);
+            AddIdentityServer(services, configuration);
 
             services.AddScoped<IDateTime, DateTimeService>();
         }

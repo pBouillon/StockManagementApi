@@ -3,7 +3,7 @@
 namespace Infrastructure.Identity
 {
     /// <summary>
-    /// TODO
+    /// Represent a user in the application
     /// </summary>
     public class ApplicationUser : IdentityUser { }
 }

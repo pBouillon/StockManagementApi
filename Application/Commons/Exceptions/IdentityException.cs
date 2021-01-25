@@ -42,9 +42,9 @@ namespace Application.Commons.Exceptions
         /// Create a new exception with a specific message from the response of a failing Identity operation
         /// </summary>
         /// <param name="message">Error message</param>
-        /// <param name="identityResult">Result of the Identity operation causing this exception</param>
-        public IdentityException(string message, IdentityResult identityResult)
+        /// <param name="errors">Errors causing this exception</param>
+        public IdentityException(string message, string[] errors)
             : base(message)
-            => Errors = identityResult.Errors;
+            => Errors = errors;
     }
 }
