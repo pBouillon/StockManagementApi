@@ -58,7 +58,6 @@ namespace Application.Products.Commands.DeleteProductCommand
 
             if (entity == null)
             {
-        
                 var unknownProductException = new NotFoundException(nameof(Product), new { request.Id });
 
                 _logger.LogError(unknownProductException, $"No product found for the provided id {request.Id}");

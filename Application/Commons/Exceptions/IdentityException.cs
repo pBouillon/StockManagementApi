@@ -1,16 +1,17 @@
-﻿using System;
+﻿using Application.Commons.Models;
+using System;
 using System.Collections.Generic;
-using Application.Commons.Models;
+using Application.Authentication.Dtos;
 
 namespace Application.Commons.Exceptions
 {
     /// <summary>
-    /// TODO
+    /// Exception thrown when an error related to Identity occurs
     /// </summary>
     public class IdentityException : ApplicationException
     {
         /// <summary>
-        /// TODO
+        /// List of all the errors causing this exception
         /// </summary>
         public IEnumerable<string> Errors { get; }
 
@@ -38,10 +39,10 @@ namespace Application.Commons.Exceptions
             => Errors = Array.Empty<string>();
 
         /// <summary>
-        /// TODO
+        /// Create a new exception with a specific message from the response of a failing Identity operation
         /// </summary>
-        /// <param name="message"></param>
-        /// <param name="identityResult"></param>
+        /// <param name="message">Error message</param>
+        /// <param name="identityResult">Result of the Identity operation causing this exception</param>
         public IdentityException(string message, IdentityResult identityResult)
             : base(message)
             => Errors = identityResult.Errors;

@@ -47,14 +47,14 @@ namespace Infrastructure.Identity
         /// <param name="username"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public async Task<IdentityResult<AuthenticationResponse>> GetJwtForUserAsync(string username, string password)
+        public async Task<IdentityResult<AuthenticationResponseDto>> GetJwtForUserAsync(string username, string password)
         {
             var userAuthentication = await GetAuthenticatedUserAsync(username, password);
 
             return !userAuthentication.Succeeded 
-                ? IdentityResult<AuthenticationResponse>.Failure(
+                ? IdentityResult<AuthenticationResponseDto>.Failure(
                     userAuthentication.Errors)
-                : IdentityResult<AuthenticationResponse>.Success(
+                : IdentityResult<AuthenticationResponseDto>.Success(
                     await GenerateJwtForUserAsync(userAuthentication.Payload));
         }
 
@@ -63,7 +63,7 @@ namespace Infrastructure.Identity
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        private async Task<AuthenticationResponse> GenerateJwtForUserAsync(ApplicationUser user)
+        private async Task<AuthenticationResponseDto> GenerateJwtForUserAsync(ApplicationUser user)
         {
             var userClaims = await GetClaimsAsync(user);
 
@@ -79,7 +79,7 @@ namespace Infrastructure.Identity
                     _identityConfiguration.SecurityAlgorithm)
             );
 
-            return new AuthenticationResponse
+            return new AuthenticationResponseDto
             {
                 ExpireOn = token.ValidTo,
                 Token = new JwtSecurityTokenHandler()

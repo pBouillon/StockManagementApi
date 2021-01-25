@@ -24,7 +24,7 @@ namespace WebApi.Controllers
         /// <param name="command"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult<AuthenticationResponse>> LogUserInAsync(LoginCommand command)
+        public async Task<ActionResult<AuthenticationResponseDto>> LogUserInAsync(LoginCommand command)
             => Ok(await Mediator.Send(command));
     }
 }

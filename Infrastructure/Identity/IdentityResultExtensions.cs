@@ -1,10 +1,11 @@
-﻿using Application.Commons.Models;
-using Microsoft.AspNetCore.Identity;
-using System.Linq;
+﻿using System.Linq;
 using IdentityResult = Application.Commons.Models.IdentityResult;
 
 namespace Infrastructure.Identity
 {
+    /// <summary>
+    /// TODO
+    /// </summary>
     public static class IdentityResultExtensions
     {
         public static IdentityResult ToApplicationResult(this Microsoft.AspNetCore.Identity.IdentityResult result)

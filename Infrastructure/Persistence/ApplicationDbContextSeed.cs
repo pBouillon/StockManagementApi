@@ -7,8 +7,17 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Persistence
 {
+    /// <summary>
+    /// TODO
+    /// </summary>
     public class ApplicationDbContextSeed
     {
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="userManager"></param>
+        /// <param name="roleManager"></param>
+        /// <returns></returns>
         public static async Task SeedDefaultUserAsync(
             UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
@@ -31,6 +40,11 @@ namespace Infrastructure.Persistence
             }
         }
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public static async Task SeedSampleDataAsync(IApplicationDbContext context)
         {
             if (context.Products.Any())

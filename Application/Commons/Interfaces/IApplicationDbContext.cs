@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace Application.Commons.Interfaces
 {
     /// <summary>
-    /// Application database context, use to interact with the stored entities
+    /// Application database context, used to interact with the stored entities
     /// </summary>
     public interface IApplicationDbContext
     {

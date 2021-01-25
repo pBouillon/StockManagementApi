@@ -1,11 +1,11 @@
 ﻿using Application.Commons.Interfaces;
+using Application.Products.Dtos;
 using AutoMapper;
 using Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
-using Application.Products.Dtos;
 
 namespace Application.Products.Commands.CreateProductCommand
 {

@@ -1,5 +1,6 @@
-﻿using System;
+﻿using Application.Commons.Exceptions;
 using Application.Commons.Interfaces;
+using Application.Products.Dtos;
 using AutoMapper;
 using Domain.Entities;
 using MediatR;
@@ -7,8 +8,6 @@ using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Application.Commons.Exceptions;
-using Application.Products.Dtos;
 
 namespace Application.Products.Queries.GetProductQuery
 {

@@ -2,5 +2,8 @@
 
 namespace Infrastructure.Identity
 {
+    /// <summary>
+    /// TODO
+    /// </summary>
     public class ApplicationUser : IdentityUser { }
 }

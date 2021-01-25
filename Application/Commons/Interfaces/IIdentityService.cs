@@ -5,24 +5,26 @@ using System.Threading.Tasks;
 namespace Application.Commons.Interfaces
 {
     /// <summary>
-    /// TODO
+    /// Identity service, used to interact with the system authentication mechanisms
     /// </summary>
     public interface IIdentityService
     {
         /// <summary>
-        /// TODO
+        /// Create a new user
         /// </summary>
-        /// <param name="username"></param>
-        /// <param name="password"></param>
-        /// <returns></returns>
+        /// <param name="username">User name</param>
+        /// <param name="password">
+        /// User password, according to the policies specified when registering the IdentityServer's services
+        /// </param>
+        /// <returns>An awaitable task of the create user</returns>
         Task<IdentityResult> CreateUserAsync(string username, string password);
-     
+
         /// <summary>
-        /// TODO
+        /// Authenticate a user, and get his newly forged JWT
         /// </summary>
-        /// <param name="username"></param>
-        /// <param name="password"></param>
-        /// <returns></returns>
-        Task<IdentityResult<AuthenticationResponse>> GetJwtForUserAsync(string username, string password);
+        /// <param name="username">User name</param>
+        /// <param name="password">The password of the user, in clear text</param>
+        /// <returns>An awaitable task of the user's JWT in an <see cref="AuthenticationResponseDto"/></returns>
+        Task<IdentityResult<AuthenticationResponseDto>> GetJwtForUserAsync(string username, string password);
     }
 }
