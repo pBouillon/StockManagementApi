@@ -3,17 +3,17 @@
 namespace Application.Commons.Models.Identity
 {
     /// <summary>
-    /// Identity response returned on the creation of a user
+    /// Representation of a user in Identity
     /// </summary>
-    public class CreatedUserResponse
+    public class IdentityUser
     {
         /// <summary>
-        /// Id of the created user
+        /// Id of the user
         /// </summary>
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Name of the created user
+        /// Name of the user
         /// </summary>
         public string Username { get; set; } = string.Empty;
     }

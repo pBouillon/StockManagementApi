@@ -1,6 +1,6 @@
-﻿using Application.User.Commands;
+﻿using Application.User.Commands.CreateUserCommand;
 using Application.User.Dtos;
-using Application.User.Queries;
+using Application.User.Queries.GetUserQuery;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System;

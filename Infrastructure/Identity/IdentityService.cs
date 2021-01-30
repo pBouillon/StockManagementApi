@@ -1,5 +1,5 @@
 ﻿using Application.Commons.Interfaces;
-using Application.Commons.Models;
+using Application.Commons.Models.Identity;
 using IdentityModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -9,8 +9,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Application.Commons.Models.Identity;
 using IdentityResult = Application.Commons.Models.Identity.IdentityResult;
+using IdentityUser = Application.Commons.Models.Identity.IdentityUser;
 
 namespace Infrastructure.Identity
 {
@@ -38,7 +38,7 @@ namespace Infrastructure.Identity
             => (_identityConfiguration, _userManager) = (identityConfiguration, userManager);
 
         /// <inheritdoc />
-        public async Task<IdentityResult<CreatedUserResponse>> CreateUserAsync(string username, string password)
+        public async Task<IdentityResult<IdentityUser>> CreateUserAsync(string username, string password)
         {
             var user = new ApplicationUser
             {
@@ -47,7 +47,7 @@ namespace Infrastructure.Identity
 
             var result = await _userManager.CreateAsync(user, password);
 
-            return result.ToApplicationResult(new CreatedUserResponse
+            return result.ToApplicationResult(new IdentityUser
             {
                 Id = Guid.Parse(user.Id),
                 Username = username
@@ -131,6 +131,18 @@ namespace Infrastructure.Identity
                     userAuthentication.Errors)
                 : IdentityResult<AuthenticationResponse>.Success(
                     await GenerateJwtForUserAsync(userAuthentication.Payload!));
+        }
+
+        /// <inheritdoc />
+        public async Task<IdentityResult<IdentityUser>> GetUserAsync(Guid id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+
+            return IdentityResult<IdentityUser>.Success(new IdentityUser
+            {
+                Id = Guid.Parse(user.Id),
+                Username = user.UserName
+            });
         }
     }
 }

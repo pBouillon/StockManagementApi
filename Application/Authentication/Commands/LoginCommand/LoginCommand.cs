@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Application.Authentication.Commands
+namespace Application.Authentication.Commands.LoginCommand
 {
     /// <summary>
     /// CQRS command to log a user in and forge his JWT

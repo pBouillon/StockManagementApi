@@ -1,9 +1,8 @@
-﻿using Application.Authentication.Commands;
-using Application.Commons.Models;
+﻿using Application.Authentication.Commands.LoginCommand;
+using Application.Commons.Models.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using Application.Commons.Models.Identity;
 
 namespace WebApi.Controllers
 {

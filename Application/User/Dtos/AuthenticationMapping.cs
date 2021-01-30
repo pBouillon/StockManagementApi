@@ -14,7 +14,7 @@ namespace Application.User.Dtos
         public AuthenticationMapping()
         {
             // Map the response of the creation of user to its DTO
-            CreateMap<CreatedUserResponse, UserDto>();
+            CreateMap<IdentityUser, UserDto>();
         }
     }
 }

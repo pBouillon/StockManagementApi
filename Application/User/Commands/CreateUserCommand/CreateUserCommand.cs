@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Application.User.Commands
+namespace Application.User.Commands.CreateUserCommand
 {
     /// <summary>
     /// CQRS command to create a new user in the system
