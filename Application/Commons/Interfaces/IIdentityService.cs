@@ -1,5 +1,4 @@
-﻿using Application.Authentication.Dtos;
-using Application.Commons.Models;
+﻿using Application.Commons.Models.Identity;
 using System.Threading.Tasks;
 
 namespace Application.Commons.Interfaces
@@ -17,7 +16,7 @@ namespace Application.Commons.Interfaces
         /// User password, according to the policies specified when registering the IdentityServer's services
         /// </param>
         /// <returns>An awaitable task of the create user</returns>
-        Task<IdentityResult> CreateUserAsync(string username, string password);
+        Task<IdentityResult<CreatedUserResponse>> CreateUserAsync(string username, string password);
 
         /// <summary>
         /// Authenticate a user, and get his newly forged JWT

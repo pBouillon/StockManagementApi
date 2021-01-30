@@ -1,6 +1,6 @@
 ﻿using Application.Commons.Exceptions;
 using Application.Commons.Interfaces;
-using Application.Commons.Models;
+using Application.Commons.Models.Identity;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using System.Threading;

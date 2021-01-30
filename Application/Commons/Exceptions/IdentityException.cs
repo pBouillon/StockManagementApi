@@ -1,7 +1,6 @@
 ﻿using Application.Commons.Models;
 using System;
 using System.Collections.Generic;
-using Application.Authentication.Dtos;
 
 namespace Application.Commons.Exceptions
 {

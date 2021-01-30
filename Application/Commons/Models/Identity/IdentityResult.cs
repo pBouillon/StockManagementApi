@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Application.Commons.Models
+namespace Application.Commons.Models.Identity
 {
     /// <summary>
     /// Wrapper for the result of the IdentityServer's operations

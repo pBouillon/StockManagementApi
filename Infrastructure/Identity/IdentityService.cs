@@ -9,7 +9,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using IdentityResult = Application.Commons.Models.IdentityResult;
+using Application.Commons.Models.Identity;
+using IdentityResult = Application.Commons.Models.Identity.IdentityResult;
 
 namespace Infrastructure.Identity
 {
@@ -37,7 +38,7 @@ namespace Infrastructure.Identity
             => (_identityConfiguration, _userManager) = (identityConfiguration, userManager);
 
         /// <inheritdoc />
-        public async Task<IdentityResult> CreateUserAsync(string username, string password)
+        public async Task<IdentityResult<CreatedUserResponse>> CreateUserAsync(string username, string password)
         {
             var user = new ApplicationUser
             {
@@ -46,7 +47,11 @@ namespace Infrastructure.Identity
 
             var result = await _userManager.CreateAsync(user, password);
 
-            return result.ToApplicationResult();
+            return result.ToApplicationResult(new CreatedUserResponse
+            {
+                Id = Guid.Parse(user.Id),
+                Username = username
+            });
         }
         
         /// <summary>

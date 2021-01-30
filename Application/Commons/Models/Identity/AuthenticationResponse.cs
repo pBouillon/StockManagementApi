@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Application.Commons.Models
+namespace Application.Commons.Models.Identity
 {
     /// <summary>
     /// User authentication response, holding the user's JWT information

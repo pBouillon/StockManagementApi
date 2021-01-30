@@ -1,17 +1,18 @@
-﻿using Application.Authentication.Dtos;
-using Application.Commons.Exceptions;
+﻿using Application.Commons.Exceptions;
 using Application.Commons.Interfaces;
+using Application.User.Dtos;
+using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Application.Authentication.Commands
+namespace Application.User.Commands
 {
     /// <summary>
     /// CQRS command to create a new user in the system
     /// </summary>
-    public class CreateUserCommand : IRequest<CreatedUserDto>
+    public class CreateUserCommand : IRequest<UserDto>
     {
         /// <summary>
         /// Name of the user to be created
@@ -28,7 +29,7 @@ namespace Application.Authentication.Commands
     /// <summary>
     /// Handler for the <see cref="CreateUserCommand"/>
     /// </summary>
-    public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, CreatedUserDto>
+    public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserDto>
     {
         /// <summary>
         /// IdentityService instance to manage the authentication logic
@@ -41,12 +42,19 @@ namespace Application.Authentication.Commands
         private readonly ILogger<CreateUserCommandHandler> _logger;
 
         /// <summary>
+        /// AutoMapper interface to map domain objects to DTO
+        /// </summary>
+        private readonly IMapper _mapper;
+
+        /// <summary>
         /// Default constructor for the handler
         /// </summary>
         /// <param name="identityService">IdentityService instance to manage the authentication logic</param>
         /// <param name="logger">Operation's logger</param>
-        public CreateUserCommandHandler(IIdentityService identityService, ILogger<CreateUserCommandHandler> logger)
-            => (_identityService, _logger) = (identityService, logger);
+        /// <param name="mapper">AutoMapper interface to map domain objects to DTO</param>
+        public CreateUserCommandHandler(
+            IIdentityService identityService, ILogger<CreateUserCommandHandler> logger, IMapper mapper)
+            => (_identityService, _logger, _mapper) = (identityService, logger, mapper);
 
         /// <summary>
         /// Create a new user in the system
@@ -55,8 +63,8 @@ namespace Application.Authentication.Commands
         /// <param name="cancellationToken">
         /// <see cref="CancellationToken"/> used to asynchronously cancel the pending operation
         /// </param>
-        /// <returns>The <see cref="CreatedUserDto"/> associated to the created user</returns>
-        public async Task<CreatedUserDto> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+        /// <returns>The <see cref="UserDto"/> associated to the created user</returns>
+        public async Task<UserDto> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
             var result = await _identityService.CreateUserAsync(request.Username, request.Password);
 
@@ -72,10 +80,7 @@ namespace Application.Authentication.Commands
 
             _logger.LogInformation($"User {request.Username} successfully created");
 
-            return new CreatedUserDto
-            {
-                Username = request.Username
-            };
+            return _mapper.Map<UserDto>(result.Payload);
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Domain.Entities;
-using System;
 
 namespace Application.Products.Dtos
 {
@@ -9,9 +8,9 @@ namespace Application.Products.Dtos
     public class ProductDto
     {
         /// <summary>
-        /// If of the product
+        /// Id of the product
         /// </summary>
-        public Guid Id { get; set; }
+        public string Id { get; set; } = string.Empty;
 
         /// <summary>
         /// Name of the product

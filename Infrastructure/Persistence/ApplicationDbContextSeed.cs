@@ -21,6 +21,10 @@ namespace Infrastructure.Persistence
         public static async Task SeedDefaultUserAsync(
             UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
+            // TODO: move roles to dedicated class
+            // TODO: create policies
+            // TODO: create default user
+
             var administratorRole = new IdentityRole("Administrator");
 
             if (roleManager.Roles.All(role => role.Name != administratorRole.Name))
