@@ -6,6 +6,8 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Commons.Exceptions;
+using Application.Commons.Models.Identity;
 
 namespace Application.User.Queries.GetUserQuery
 {
@@ -60,9 +62,20 @@ namespace Application.User.Queries.GetUserQuery
         /// <returns>The <see cref="UserDto"/> associated to the created user</returns>
         public async Task<UserDto> Handle(GetUserQuery request, CancellationToken cancellationToken)
         {
-            var user = await _identityService.GetUserAsync(request.Id);
+            var result = await _identityService.GetUserAsync(request.Id);
 
-            return _mapper.Map<UserDto>(user.Payload);
+            if (!result.Succeeded)
+            {
+                var unknownUserException = new NotFoundException(nameof(Commons.Models.Identity.User), new { request.Id });
+
+                _logger.LogError(unknownUserException, $"No user found for the provided id {request.Id}");
+
+                throw unknownUserException;
+            }
+
+            _logger.LogDebug($"User of id { request.Id } retrieved { result }");
+
+            return _mapper.Map<UserDto>(result.Payload);
         }
     }
 }

@@ -9,8 +9,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using IdentityResult = Application.Commons.Models.Identity.IdentityResult;
-using IdentityUser = Application.Commons.Models.Identity.IdentityUser;
 
 namespace Infrastructure.Identity
 {
@@ -38,7 +36,7 @@ namespace Infrastructure.Identity
             => (_identityConfiguration, _userManager) = (identityConfiguration, userManager);
 
         /// <inheritdoc />
-        public async Task<IdentityResult<IdentityUser>> CreateUserAsync(string username, string password)
+        public async Task<Result<User>> CreateUserAsync(string username, string password)
         {
             var user = new ApplicationUser
             {
@@ -47,7 +45,7 @@ namespace Infrastructure.Identity
 
             var result = await _userManager.CreateAsync(user, password);
 
-            return result.ToApplicationResult(new IdentityUser
+            return result.ToApplicationResult(new User
             {
                 Id = Guid.Parse(user.Id),
                 Username = username
@@ -88,16 +86,16 @@ namespace Infrastructure.Identity
         /// </summary>
         /// <param name="username">User name</param>
         /// <param name="password">Password of the user, in plain text</param>
-        /// <returns>An <see cref="IdentityResult"/> holding the result</returns>
-        private async Task<IdentityResult<ApplicationUser>> GetAuthenticatedUserAsync(
+        /// <returns>An <see cref="Result"/> holding the result</returns>
+        private async Task<Result<ApplicationUser>> GetAuthenticatedUserAsync(
             string username, string password)
         {
             var user = await _userManager.FindByNameAsync(username);
 
             return user != null
                    && await _userManager.CheckPasswordAsync(user, password)
-                ? IdentityResult<ApplicationUser>.Success(user)
-                : IdentityResult<ApplicationUser>.Failure(new[] { "Invalid credentials" });
+                ? Result<ApplicationUser>.Success(user)
+                : Result<ApplicationUser>.Failure(new[] { "Invalid credentials" });
         }
 
         /// <summary>
@@ -122,27 +120,29 @@ namespace Infrastructure.Identity
         }
        
         /// <inheritdoc />
-        public async Task<IdentityResult<AuthenticationResponse>> GetJwtForUserAsync(string username, string password)
+        public async Task<Result<AuthenticationResponse>> GetJwtForUserAsync(string username, string password)
         {
             var userAuthentication = await GetAuthenticatedUserAsync(username, password);
 
             return !userAuthentication.Succeeded
-                ? IdentityResult<AuthenticationResponse>.Failure(
+                ? Result<AuthenticationResponse>.Failure(
                     userAuthentication.Errors)
-                : IdentityResult<AuthenticationResponse>.Success(
+                : Result<AuthenticationResponse>.Success(
                     await GenerateJwtForUserAsync(userAuthentication.Payload!));
         }
 
         /// <inheritdoc />
-        public async Task<IdentityResult<IdentityUser>> GetUserAsync(Guid id)
+        public async Task<Result<User>> GetUserAsync(Guid id)
         {
             var user = await _userManager.FindByIdAsync(id.ToString());
 
-            return IdentityResult<IdentityUser>.Success(new IdentityUser
-            {
-                Id = Guid.Parse(user.Id),
-                Username = user.UserName
-            });
+            return user != null
+                ? Result<User>.Success(new User
+                {
+                    Id = Guid.Parse(user.Id),
+                    Username = user.UserName
+                })
+                : Result<User>.Failure(new[] {"No user found for the provided ID"});
         }
     }
 }

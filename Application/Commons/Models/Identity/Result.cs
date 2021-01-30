@@ -7,7 +7,7 @@ namespace Application.Commons.Models.Identity
     /// <summary>
     /// Wrapper for the result of the IdentityServer's operations
     /// </summary>
-    public class IdentityResult
+    public class Result
     {
         /// <summary>
         /// Flag indicating whether this operation succeeded or not
@@ -24,30 +24,30 @@ namespace Application.Commons.Models.Identity
         /// </summary>
         /// <param name="succeeded">Flag indicating whether this operation succeeded or not</param>
         /// <param name="errors">A collection of the errors that might have occurred</param>
-        internal IdentityResult(bool succeeded, IEnumerable<string> errors)
+        internal Result(bool succeeded, IEnumerable<string> errors)
             => (Succeeded, Errors) = (succeeded, errors.ToArray());
 
         /// <summary>
-        /// Create a new <see cref="IdentityResult"/> indicating that the operation failed
+        /// Create a new <see cref="Result"/> indicating that the operation failed
         /// </summary>
         /// <param name="errors">Causes of the failure</param>
-        /// <returns>The <see cref="IdentityResult"/> indicating that the operation failed</returns>
-        public static IdentityResult Failure(IEnumerable<string> errors)
-            => new IdentityResult(false, errors);
+        /// <returns>The <see cref="Result"/> indicating that the operation failed</returns>
+        public static Result Failure(IEnumerable<string> errors)
+            => new Result(false, errors);
 
         /// <summary>
-        /// Create a new <see cref="IdentityResult"/> indicating that the operation succeeded
+        /// Create a new <see cref="Result"/> indicating that the operation succeeded
         /// </summary>
-        /// <returns>The <see cref="IdentityResult"/> indicating that the operation succeeded</returns>
-        public static IdentityResult Success()
-            => new IdentityResult(true, Array.Empty<string>());
+        /// <returns>The <see cref="Result"/> indicating that the operation succeeded</returns>
+        public static Result Success()
+            => new Result(true, Array.Empty<string>());
     }
 
     /// <summary>
     /// Wrapper for the result of the IdentityServer's operations, holds a payload
     /// </summary>
     /// <typeparam name="TPayload">Type of the response's payload</typeparam>
-    public class IdentityResult<TPayload>
+    public class Result<TPayload>
         where TPayload : class
     {
         /// <summary>
@@ -71,24 +71,24 @@ namespace Application.Commons.Models.Identity
         /// <param name="succeeded">Flag indicating whether this operation succeeded or not</param>
         /// <param name="errors">A collection of the errors that might have occurred</param>
         /// <param name="payload">The operation's response</param>
-        internal IdentityResult(bool succeeded, IEnumerable<string> errors, TPayload? payload)
+        internal Result(bool succeeded, IEnumerable<string> errors, TPayload? payload)
             => (Succeeded, Errors, Payload) = (succeeded, errors.ToArray(), payload);
 
         /// <summary>
-        /// Create a new <see cref="IdentityResult"/> indicating that the operation failed
+        /// Create a new <see cref="Result"/> indicating that the operation failed
         /// </summary>
         /// <param name="errors">Causes of the failure</param>
-        /// <returns>The <see cref="IdentityResult"/> indicating that the operation failed</returns>
-        public static IdentityResult<TPayload> Failure(IEnumerable<string> errors)
-            => new IdentityResult<TPayload>(false, errors, default);
+        /// <returns>The <see cref="Result"/> indicating that the operation failed</returns>
+        public static Result<TPayload> Failure(IEnumerable<string> errors)
+            => new Result<TPayload>(false, errors, default);
 
         /// <summary>
-        /// Create a new <see cref="IdentityResult"/> indicating that the operation succeeded
+        /// Create a new <see cref="Result"/> indicating that the operation succeeded
         /// </summary>
         /// <typeparam name="TPayload">Type of the response's payload</typeparam>
         /// <param name="payload">The operation's response</param>
-        /// <returns>The <see cref="IdentityResult"/> indicating that the operation succeeded</returns>
-        public static IdentityResult<TPayload> Success(TPayload payload)
-            => new IdentityResult<TPayload>(true, Array.Empty<string>(), payload);
+        /// <returns>The <see cref="Result"/> indicating that the operation succeeded</returns>
+        public static Result<TPayload> Success(TPayload payload)
+            => new Result<TPayload>(true, Array.Empty<string>(), payload);
     }
 }

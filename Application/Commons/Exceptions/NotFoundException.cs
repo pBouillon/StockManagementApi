@@ -33,6 +33,6 @@ namespace Application.Commons.Exceptions
         /// <param name="name">Name of the entity</param>
         /// <param name="key">Key used for the search</param>
         public NotFoundException(string name, object key)
-            : base($"Entity \"{name}\" ({key}) was not found") { }
+            : base($"Entity '{name}' ({key}) was not found") { }
     }
 }

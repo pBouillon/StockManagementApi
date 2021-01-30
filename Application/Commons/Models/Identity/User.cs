@@ -5,7 +5,7 @@ namespace Application.Commons.Models.Identity
     /// <summary>
     /// Representation of a user in Identity
     /// </summary>
-    public class IdentityUser
+    public class User
     {
         /// <summary>
         /// Id of the user
