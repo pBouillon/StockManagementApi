@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Application.Commons.Exceptions;
 using Application.Commons.Interfaces;
 using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Application.Commons.Exceptions;
 
 namespace Application.Products.Commands.DeleteProductCommand
 {

@@ -4,12 +4,12 @@ using FluentValidation;
 namespace Application.Products.Commands.UpdateProductCommand
 {
     /// <summary>
-    /// TODO
+    /// Validator used to validate the update of a <see cref="Product"/>
     /// </summary>
     public class UpdateProductCommandValidator : AbstractValidator<UpdateProductCommand>
     {
         /// <summary>
-        /// TODO
+        /// Create the validator
         /// </summary>
         public UpdateProductCommandValidator()
         {
