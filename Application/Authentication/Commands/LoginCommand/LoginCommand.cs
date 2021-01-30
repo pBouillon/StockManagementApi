@@ -71,7 +71,7 @@ namespace Application.Authentication.Commands.LoginCommand
 
             _logger.LogInformation($"User {request.Username} successfully logged in");
             
-            return result.Payload;
+            return result.Payload!;
         }
     }
 }

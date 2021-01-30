@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
 {
+    // TODO: remove (for test purposes only)
     public class TestController : ApiController
     {
         public TestController(ISender mediator) 
