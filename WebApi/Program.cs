@@ -1,5 +1,6 @@
 using Infrastructure.Identity;
 using Infrastructure.Persistence;
+using Infrastructure.Persistence.Seeding;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ namespace WebApi
 
             await MigrateDatabaseAsync(scope.ServiceProvider);
 
+            await SeedIdentityAsync(scope.ServiceProvider);
             await SeedDatabaseAsync(scope.ServiceProvider);
 
             await host.RunAsync();
@@ -66,19 +68,42 @@ namespace WebApi
             try
             {
                 var context = services.GetRequiredService<ApplicationDbContext>();
-
                 await ApplicationDbContextSeed.SeedSampleDataAsync(context);
                 logger.LogInformation("Default database content created");
-
-                var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-                var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-
-                await ApplicationDbContextSeed.SeedDefaultUserAsync(userManager, roleManager);
-                logger.LogInformation("Default role(s) and user(s) created");
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "An error occurred while initializing the database content");
+                throw;
+            }
+        }
+
+        private static async Task SeedIdentityAsync(IServiceProvider services)
+        {
+            var logger = services.GetRequiredService<ILogger<Program>>();
+
+            try
+            {
+                // Create the roles
+                var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                await IdentitySeed.SeedDefaultRolesAsync(roleManager);
+                logger.LogInformation("Default role(s) created");
+
+                // Create the default users
+                var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+                if (environment == Environments.Production)
+                {
+                    logger.LogWarning("Production environment detected, no default users will be created");
+                    return;
+                }
+
+                var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+                await IdentitySeed.SeedDefaultUsersAsync(userManager);
+                logger.LogInformation("Default user(s) created");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while initializing identity's content");
                 throw;
             }
         }

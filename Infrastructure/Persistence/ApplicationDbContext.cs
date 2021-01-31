@@ -56,7 +56,7 @@ namespace Infrastructure.Persistence
                 {
                     case EntityState.Added:
                         entry.Entity.CreatedOn = _dateTime.Now;
-                        _logger.LogInformation("Creation date set");
+                        _logger.LogInformation($"Creation date set for {entry}");
                         break;
 
                     case EntityState.Modified:
