@@ -12,6 +12,7 @@ namespace WebApi.Controllers
     /// <summary>
     /// REST API controller for the application users
     /// </summary>
+    [Authorize]
     public class UserController : ApiController
     {
         /// <summary>
@@ -33,6 +34,13 @@ namespace WebApi.Controllers
             var createdUser = await Mediator.Send(command);
 
             return CreatedAtAction(nameof(GetUserByIdAsync), new { createdUser.Id }, createdUser);
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteUserByIdAsync(Guid id)
+        {
+            // TODO: delete the user if it is the current user or an admin
+            return await Task.FromResult(NoContent());
         }
 
         /// <summary>
