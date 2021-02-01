@@ -3,7 +3,7 @@ using Domain.Entities;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Infrastructure.Persistence.Seeding
+namespace Infrastructure.Persistence
 {
     /// <summary>
     /// Database seeding class exposing several to populate the database on startup

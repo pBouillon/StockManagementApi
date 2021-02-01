@@ -1,11 +1,10 @@
-﻿using Infrastructure.Identity;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Infrastructure.Persistence.Seeding
+namespace Infrastructure.Identity
 {
     /// <summary>
     /// Database seeding class exposing methods to create default roles and users

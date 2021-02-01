@@ -1,6 +1,5 @@
 using Infrastructure.Identity;
 using Infrastructure.Persistence;
-using Infrastructure.Persistence.Seeding;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
