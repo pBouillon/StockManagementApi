@@ -2,6 +2,7 @@
 using Application.User.Dtos;
 using Application.User.Queries.GetUserQuery;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -25,6 +26,7 @@ namespace WebApi.Controllers
         /// </summary>
         /// <param name="command">Payload from which the new user will be created</param>
         /// <returns>A representation of the newly created user</returns>
+        [Authorize(Roles = "Administrator")]
         [HttpPost]
         public async Task<ActionResult<UserDto>> CreateUserAsync(CreateUserCommand command)
         {

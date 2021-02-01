@@ -64,7 +64,7 @@ namespace Application.Authentication.Commands.LoginCommand
                 var identityException = new IdentityException(
                     $"Unable to forge a JWT for the user '{ request.Username }'", result.Errors);
 
-                _logger.LogError(identityException.Message);
+                _logger.LogError(identityException, identityException.Message);
 
                 throw identityException;
             }

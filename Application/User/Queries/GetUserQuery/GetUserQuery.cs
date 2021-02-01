@@ -1,4 +1,5 @@
-﻿using Application.Commons.Interfaces;
+﻿using Application.Commons.Exceptions;
+using Application.Commons.Interfaces;
 using Application.User.Dtos;
 using AutoMapper;
 using MediatR;
@@ -6,8 +7,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Application.Commons.Exceptions;
-using Application.Commons.Models.Identity;
 
 namespace Application.User.Queries.GetUserQuery
 {

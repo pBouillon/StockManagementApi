@@ -6,6 +6,7 @@ using Application.Products.Dtos;
 using Application.Products.Queries.GetAllProductsQuery;
 using Application.Products.Queries.GetProductQuery;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace WebApi.Controllers
     /// <summary>
     /// REST API controller for the product resources
     /// </summary>
+    [Authorize]
     public class ProductController : ApiController
     {
         /// <summary>

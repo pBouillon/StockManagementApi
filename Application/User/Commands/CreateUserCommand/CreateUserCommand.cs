@@ -73,7 +73,7 @@ namespace Application.User.Commands.CreateUserCommand
                 var identityException = new IdentityException(
                     $"Unable to create the user {request.Username}", result.Errors);
 
-                _logger.LogError(identityException.Message, identityException);
+                _logger.LogError(identityException, "Reasons: {}", identityException.Errors);
 
                 throw identityException;
             }
