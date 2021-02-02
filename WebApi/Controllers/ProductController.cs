@@ -2,18 +2,21 @@
 using Application.Products.Commands.CreateProductCommand;
 using Application.Products.Commands.DeleteProductCommand;
 using Application.Products.Commands.UpdateProductCommand;
+using Application.Products.Dtos;
 using Application.Products.Queries.GetAllProductsQuery;
 using Application.Products.Queries.GetProductQuery;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
-using Application.Products.Dtos;
 
 namespace WebApi.Controllers
 {
     /// <summary>
     /// REST API controller for the product resources
     /// </summary>
+    [Authorize]
     public class ProductController : ApiController
     {
         /// <summary>
@@ -42,7 +45,7 @@ namespace WebApi.Controllers
         /// <param name="id">Id of the item to be deleted</param>
         /// <returns>No content on success</returns>
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProductByIdAsync(int id)
+        public async Task<IActionResult> DeleteProductByIdAsync(Guid id)
         {
             await Mediator.Send(new DeleteProductCommand { Id = id });
 
@@ -65,7 +68,7 @@ namespace WebApi.Controllers
         /// <param name="id">Id of the product to retrieve</param>
         /// <returns>The product matching the provided id</returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProductDto>> GetProductByIdAsync(int id)
+        public async Task<ActionResult<ProductDto>> GetProductByIdAsync(Guid id)
             => Ok(await Mediator.Send(new GetProductQuery { Id = id }));
 
         /// <summary>
@@ -75,11 +78,11 @@ namespace WebApi.Controllers
         /// <param name="command">Payload from which the product will be updated</param>
         /// <returns>The updated product's representation</returns>
         [HttpPut("{id}")]
-        public async Task<ActionResult<ProductDto>> UpdateProductById(int id, UpdateProductCommand command)
+        public async Task<ActionResult<ProductDto>> UpdateProductById(Guid id, UpdateProductCommand command)
         {
             if (id != command.Id)
             {
-                return BadRequest();
+                return BadRequest(new { Error = "Ids do not match" });
             }
 
             return Ok(await Mediator.Send(command));

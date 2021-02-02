@@ -1,4 +1,5 @@
-﻿using Domain.Commons;
+﻿using System;
+using Domain.Commons;
 
 namespace Domain.Entities
 {
@@ -13,9 +14,9 @@ namespace Domain.Entities
         public const int NameMaxLength = 200;
 
         /// <summary>
-        /// If of the product
+        /// Id of the product
         /// </summary>
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Name of the product

@@ -1,4 +1,5 @@
 using Application;
+using Application.Commons.Interfaces;
 using Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -6,7 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using System.Collections.Generic;
 using WebApi.Commons.ExceptionFilters;
+using WebApi.Services;
 
 namespace WebApi
 {
@@ -23,6 +26,8 @@ namespace WebApi
         {
             services.AddInfrastructure(Configuration);
             services.AddApplication();
+
+            services.AddTransient<ICurrentUserService, CurrentUserService>();
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -38,12 +43,41 @@ namespace WebApi
 
                 // Add filters for the application's exceptions
                 options.Filters.Add<ApplicationExceptionFilter>();
+                options.Filters.Add<IdentityExceptionFilter>();
                 options.Filters.Add<ValidationExceptionFilter>();
             });
 
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Stock management web API", Version = "v1" });
+                
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = @"JWT Authorization header using the Bearer scheme.
+                      Enter 'Bearer' [space] and then your token in the text input below:",
+                    In = ParameterLocation.Header,
+                    Name = "Authorization",
+                    Scheme = "Bearer",
+                    Type = SecuritySchemeType.ApiKey,
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            In = ParameterLocation.Header,
+                            Name = "Bearer",
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            Scheme = "oauth2",
+                        },
+                        new List<string>()
+                    }
+                });
             });
         }
 
@@ -59,6 +93,7 @@ namespace WebApi
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

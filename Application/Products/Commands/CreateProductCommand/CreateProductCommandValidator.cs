@@ -3,8 +3,14 @@ using FluentValidation;
 
 namespace Application.Products.Commands.CreateProductCommand
 {
+    /// <summary>
+    /// Validator used to validate the creation of a <see cref="Product"/>
+    /// </summary>
     public class CreateProductCommandValidator : AbstractValidator<CreateProductCommand>
     {
+        /// <summary>
+        /// Create the validator
+        /// </summary>
         public CreateProductCommandValidator()
         {
             RuleFor(product => product.Name)

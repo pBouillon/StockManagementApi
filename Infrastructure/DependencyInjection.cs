@@ -1,10 +1,14 @@
-﻿using System.Reflection;
-using Application.Commons.Interfaces;
+﻿using Application.Commons.Interfaces;
+using Infrastructure.Identity;
 using Infrastructure.Persistence;
 using Infrastructure.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using System;
 
 namespace Infrastructure
 {
@@ -14,7 +18,71 @@ namespace Infrastructure
     public static class DependencyInjection
     {
         /// <summary>
-        /// Add all services of the Application layer
+        /// Add IdentityServer's services
+        /// </summary>
+        /// <param name="services">
+        /// <see cref="IServiceCollection"/> used to setup the dependency injection container
+        /// </param>
+        /// <param name="configuration">Accessor to the configuration file</param>
+        private static void AddIdentityServer(IServiceCollection services, IConfiguration configuration)
+        {
+            // Register the Identity configuration from appsettings.json
+            var identityConfiguration = configuration
+                .GetSection(nameof(IdentityConfiguration))
+                .Get<IdentityConfiguration>();
+
+            services.AddSingleton(identityConfiguration);
+
+            // Initialize Identity
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders()
+                .AddRoles<IdentityRole>();
+
+            // Configure the Identity options
+            services.Configure<IdentityOptions>(options =>
+            {
+                // Password settings
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequiredLength = 12;
+                options.Password.RequiredUniqueChars = 1;
+
+                // Lockout settings
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.AllowedForNewUsers = true;
+            });
+
+            // Configure the Identity authentication
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options =>
+                {
+                    options.SaveToken = true;
+                    options.RequireHttpsMetadata = identityConfiguration.TokenRequireHttpsMetadata;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidAudience = identityConfiguration.TokenAudience,
+                        ValidIssuer = identityConfiguration.TokenIssuer,
+                        IssuerSigningKey = identityConfiguration.SecurityKey
+                    };
+                });
+
+            // Register the associated services
+            services.AddScoped<IIdentityService, IdentityService>();
+        }
+        
+        /// <summary>
+        /// Add all services of the Infrastructure layer
         /// </summary>
         /// <param name="services">
         /// <see cref="IServiceCollection"/> used to setup the dependency injection container
@@ -23,6 +91,8 @@ namespace Infrastructure
         public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddPersistence(configuration);
+
+            AddIdentityServer(services, configuration);
 
             services.AddScoped<IDateTime, DateTimeService>();
         }

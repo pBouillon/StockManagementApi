@@ -8,9 +8,9 @@ namespace Application.Products.Dtos
     public class ProductDto
     {
         /// <summary>
-        /// If of the product
+        /// Id of the product
         /// </summary>
-        public int Id { get; set; }
+        public string Id { get; set; } = string.Empty;
 
         /// <summary>
         /// Name of the product

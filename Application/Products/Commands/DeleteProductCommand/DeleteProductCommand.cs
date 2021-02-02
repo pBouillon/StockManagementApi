@@ -1,11 +1,12 @@
-﻿using Application.Commons.Interfaces;
+﻿using Application.Commons.Exceptions;
+using Application.Commons.Interfaces;
 using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Application.Commons.Exceptions;
 
 namespace Application.Products.Commands.DeleteProductCommand
 {
@@ -17,7 +18,7 @@ namespace Application.Products.Commands.DeleteProductCommand
         /// <summary>
         /// Id of the <see cref="Product"/> to delete
         /// </summary>
-        public int Id { get; set; }
+        public Guid Id { get; set; }
     }
 
     /// <summary>
@@ -58,7 +59,6 @@ namespace Application.Products.Commands.DeleteProductCommand
 
             if (entity == null)
             {
-        
                 var unknownProductException = new NotFoundException(nameof(Product), new { request.Id });
 
                 _logger.LogError(unknownProductException, $"No product found for the provided id {request.Id}");

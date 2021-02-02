@@ -1,15 +1,17 @@
 using Application.Commons.Interfaces;
 using Domain.Commons;
 using Domain.Entities;
+using Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Persistence
 {
     /// <inheritdoc cref="IApplicationDbContext"/>
-    public class ApplicationDbContext : DbContext, IApplicationDbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext
     {
         /// <summary>
         /// Injected <see cref="IDateTime"/>
@@ -22,7 +24,7 @@ namespace Infrastructure.Persistence
         private readonly ILogger<ApplicationDbContext> _logger;
 
         ///  <inheritdoc cref="IApplicationDbContext.Products"/>
-        public DbSet<Product> Products { get; set; }
+        public DbSet<Product> Products { get; set; } = null!;
 
         /// <summary>
         /// Default constructor to create the context
@@ -54,7 +56,7 @@ namespace Infrastructure.Persistence
                 {
                     case EntityState.Added:
                         entry.Entity.CreatedOn = _dateTime.Now;
-                        _logger.LogInformation("Creation date set");
+                        _logger.LogInformation($"Creation date set for {entry}");
                         break;
 
                     case EntityState.Modified:
@@ -65,8 +67,6 @@ namespace Infrastructure.Persistence
             }
 
             var saveChangesResult = await base.SaveChangesAsync(cancellationToken);
-
-            _logger.LogInformation("Changes committed to the database");
 
             return saveChangesResult;
         }

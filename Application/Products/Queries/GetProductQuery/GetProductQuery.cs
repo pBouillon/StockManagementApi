@@ -1,14 +1,14 @@
-﻿using System;
+﻿using Application.Commons.Exceptions;
 using Application.Commons.Interfaces;
+using Application.Products.Dtos;
 using AutoMapper;
 using Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Application.Commons.Exceptions;
-using Application.Products.Dtos;
 
 namespace Application.Products.Queries.GetProductQuery
 {
@@ -20,7 +20,7 @@ namespace Application.Products.Queries.GetProductQuery
         /// <summary>
         /// Id of the product to retrieve
         /// </summary>
-        public int Id { get; set; }
+        public Guid Id { get; set; }
     }
 
     /// <summary>
@@ -76,7 +76,7 @@ namespace Application.Products.Queries.GetProductQuery
                 throw unknownProductException;
             }
 
-            _logger.LogDebug($"Product of id { request.Id } retrieved { entity }");
+            _logger.LogDebug($"Product of id { request.Id } retrieved");
 
             return Task.FromResult(_mapper.Map<ProductDto>(entity));
         }
