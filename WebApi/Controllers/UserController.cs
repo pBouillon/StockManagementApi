@@ -1,4 +1,5 @@
 ﻿using Application.User.Commands.CreateUserCommand;
+using Application.User.Commands.DeleteUserCommand;
 using Application.User.Dtos;
 using Application.User.Queries.GetUserQuery;
 using MediatR;
@@ -36,11 +37,17 @@ namespace WebApi.Controllers
             return CreatedAtAction(nameof(GetUserByIdAsync), new { createdUser.Id }, createdUser);
         }
 
-        [HttpDelete]
+        /// <summary>
+        /// Delete a user in the application
+        /// </summary>
+        /// <param name="id">Id of the user to delete</param>
+        /// <returns>No content on success</returns>
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUserByIdAsync(Guid id)
         {
-            // TODO: delete the user if it is the current user or an admin
-            return await Task.FromResult(NoContent());
+            await Mediator.Send(new DeleteUserCommand { Id = id });
+
+            return NoContent();
         }
 
         /// <summary>

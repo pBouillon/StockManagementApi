@@ -5,10 +5,11 @@ using Microsoft.AspNetCore.Mvc.Filters;
 namespace WebApi.Commons.ExceptionFilters
 {
     /// <summary>
-    /// TODO
+    /// Custom exception filter for the exceptions raised by IdentityServer
     /// </summary>
     public class IdentityExceptionFilter : ExceptionFilter<IdentityException>
     {
+        /// <inheritdoc />
         protected override void HandleException(ExceptionContext context, IdentityException exception)
         {
             context.Result = new BadRequestObjectResult(new

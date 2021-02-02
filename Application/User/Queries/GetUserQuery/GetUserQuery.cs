@@ -72,7 +72,7 @@ namespace Application.User.Queries.GetUserQuery
                 throw unknownUserException;
             }
 
-            _logger.LogDebug($"User of id { request.Id } retrieved { result }");
+            _logger.LogDebug($"User of id { request.Id } retrieved");
 
             return _mapper.Map<UserDto>(result.Payload);
         }

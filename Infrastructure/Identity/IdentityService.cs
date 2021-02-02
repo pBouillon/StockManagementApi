@@ -51,7 +51,22 @@ namespace Infrastructure.Identity
                 Username = username
             });
         }
-        
+
+        /// <inheritdoc />
+        public async Task<Result> DeleteUserAsync(Guid id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+
+            if (user == null)
+            {
+                return Result.Failure(new [] { $"No user found for the id {id}" });
+            }
+
+            var result = await _userManager.DeleteAsync(user);
+
+            return result.ToApplicationResult();
+        }
+
         /// <summary>
         /// Generate a JWT for a <see cref="ApplicationUser"/>
         /// </summary>

@@ -1,5 +1,5 @@
-﻿using System;
-using Application.Commons.Models.Identity;
+﻿using Application.Commons.Models.Identity;
+using System;
 using System.Threading.Tasks;
 
 namespace Application.Commons.Interfaces
@@ -18,6 +18,13 @@ namespace Application.Commons.Interfaces
         /// </param>
         /// <returns>An awaitable task of the create user</returns>
         Task<Result<Models.Identity.User>> CreateUserAsync(string username, string password);
+
+        /// <summary>
+        /// Delete the user associated to the Id
+        /// </summary>
+        /// <param name="id">Id associated to the user to delete</param>
+        /// <returns>The <see cref="Result"/> of the operation</returns>
+        Task<Result> DeleteUserAsync(Guid id);
 
         /// <summary>
         /// Authenticate a user, and get his newly forged JWT

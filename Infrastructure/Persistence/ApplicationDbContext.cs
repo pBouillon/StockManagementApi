@@ -68,8 +68,6 @@ namespace Infrastructure.Persistence
 
             var saveChangesResult = await base.SaveChangesAsync(cancellationToken);
 
-            _logger.LogInformation("Changes committed to the database");
-
             return saveChangesResult;
         }
     }

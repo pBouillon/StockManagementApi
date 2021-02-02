@@ -76,7 +76,7 @@ namespace Application.Products.Queries.GetProductQuery
                 throw unknownProductException;
             }
 
-            _logger.LogDebug($"Product of id { request.Id } retrieved { entity }");
+            _logger.LogDebug($"Product of id { request.Id } retrieved");
 
             return Task.FromResult(_mapper.Map<ProductDto>(entity));
         }
