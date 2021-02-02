@@ -1,4 +1,5 @@
 using Application;
+using Application.Commons.Interfaces;
 using Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System.Collections.Generic;
 using WebApi.Commons.ExceptionFilters;
+using WebApi.Services;
 
 namespace WebApi
 {
@@ -24,6 +26,8 @@ namespace WebApi
         {
             services.AddInfrastructure(Configuration);
             services.AddApplication();
+
+            services.AddTransient<ICurrentUserService, CurrentUserService>();
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
