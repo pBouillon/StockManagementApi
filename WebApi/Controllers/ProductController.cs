@@ -82,7 +82,7 @@ namespace WebApi.Controllers
         {
             if (id != command.Id)
             {
-                return BadRequest();
+                return BadRequest(new { Error = "Ids do not match" });
             }
 
             return Ok(await Mediator.Send(command));

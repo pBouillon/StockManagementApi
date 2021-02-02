@@ -23,7 +23,7 @@ namespace Application.Commons.Interfaces
         /// Delete the user associated to the Id
         /// </summary>
         /// <param name="id">Id associated to the user to delete</param>
-        /// <returns>The <see cref="Result"/> of the operation</returns>
+        /// <returns>An awaitable task of the <see cref="Result"/> of the operation</returns>
         Task<Result> DeleteUserAsync(Guid id);
 
         /// <summary>
@@ -35,10 +35,18 @@ namespace Application.Commons.Interfaces
         Task<Result<AuthenticationResponse>> GetJwtForUserAsync(string username, string password);
 
         /// <summary>
-        /// Retrieve a user by its ID
+        /// Retrieve a user by its Id
         /// </summary>
-        /// <param name="id">ID of the user to retrieve</param>
+        /// <param name="id">Id of the user to retrieve</param>
         /// <returns>An awaitable task of the user's data</returns>
         Task<Result<Models.Identity.User>> GetUserAsync(Guid id);
+
+        /// <summary>
+        /// Update the username of a user
+        /// </summary>
+        /// <param name="id">Id of the user to update</param>
+        /// <param name="username">New name of the user</param>
+        /// <returns>An awaitable task of the <see cref="Result"/> of the operation</returns>
+        Task<Result<Models.Identity.User>> UpdateUsernameAsync(Guid id, string username);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Application.User.Commands.CreateUserCommand;
 using Application.User.Commands.DeleteUserCommand;
+using Application.User.Commands.UpdateUserCommand;
 using Application.User.Dtos;
 using Application.User.Queries.GetUserQuery;
 using MediatR;
@@ -58,5 +59,22 @@ namespace WebApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<UserDto>> GetUserByIdAsync(Guid id)
             => Ok(await Mediator.Send(new GetUserQuery { Id = id }));
+
+        /// <summary>
+        /// Update a specific user
+        /// </summary>
+        /// <param name="id">Id of the user to update</param>
+        /// <param name="command">Payload from which the user will be updated</param>
+        /// <returns>The updated user's representation</returns>
+        [HttpPut("{id}")]
+        public async Task<ActionResult<UserDto>> UpdateUserById(Guid id, UpdateUserCommand command)
+        {
+            if (id != command.Id)
+            {
+                return BadRequest(new { Error = "Ids do not match" });
+            }
+
+            return Ok(await Mediator.Send(command));
+        }
     }
 }

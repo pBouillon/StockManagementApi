@@ -1,6 +1,5 @@
 ﻿using Application.Commons.Exceptions;
 using Application.Commons.Interfaces;
-using Application.Products.Commands.CreateProductCommand;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using System;
@@ -26,11 +25,6 @@ namespace Application.User.Commands.DeleteUserCommand
     public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand>
     {
         /// <summary>
-        /// Application context
-        /// </summary>
-        private readonly IApplicationDbContext _context;
-
-        /// <summary>
         /// IdentityService instance to manage the authentication logic
         /// </summary>
         private readonly IIdentityService _identityService;
@@ -43,19 +37,17 @@ namespace Application.User.Commands.DeleteUserCommand
         /// <summary>
         /// Default constructor for the handler
         /// </summary>
-        /// <param name="context">Application context</param>
         /// <param name="identityService">IdentityService instance to manage the authentication logic</param>
         /// <param name="logger">Logger</param>
-        public DeleteUserCommandHandler(
-            IApplicationDbContext context, IIdentityService identityService, ILogger<DeleteUserCommandHandler> logger)
-            => (_context, _identityService, _logger) = (context, identityService, logger);
+        public DeleteUserCommandHandler(IIdentityService identityService, ILogger<DeleteUserCommandHandler> logger)
+            => (_identityService, _logger) = (identityService, logger);
 
         /// <summary>
         /// Delete a user in the database from the incoming <see cref="DeleteUserCommand"/>
         /// </summary>
         /// <param name="request">Incoming request to handle</param>
         /// <param name="cancellationToken">
-        /// <see cref="CreateProductCommand"/> used to asynchronously cancel the pending operation
+        /// <see cref="CancellationToken"/> used to asynchronously cancel the pending operation
         /// </param>
         /// <returns>A no-op result</returns>
         public async Task<Unit> Handle(DeleteUserCommand request, CancellationToken cancellationToken)

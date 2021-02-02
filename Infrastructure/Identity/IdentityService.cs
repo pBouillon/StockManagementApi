@@ -157,7 +157,28 @@ namespace Infrastructure.Identity
                     Id = Guid.Parse(user.Id),
                     Username = user.UserName
                 })
-                : Result<User>.Failure(new[] {"No user found for the provided ID"});
+                : Result<User>.Failure(new[] { $"No user found for the id {id}" });
+        }
+
+        /// <inheritdoc />
+        public async Task<Result<User>> UpdateUsernameAsync(Guid id, string username)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+
+            if (user == null)
+            {
+                return Result<User>.Failure(new[] { $"No user found for the id {id}" });
+            }
+
+            user.UserName = username;
+
+            var result = await _userManager.UpdateAsync(user);
+
+            return result.ToApplicationResult(new User
+            {
+                Id = Guid.Parse(user.Id),
+                Username = username
+            });
         }
     }
 }
