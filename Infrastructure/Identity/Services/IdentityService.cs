@@ -10,7 +10,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace Infrastructure.Identity
+namespace Infrastructure.Identity.Services
 {
     /// <inheritdoc cref="IIdentityService"/>
     public class IdentityService : IIdentityService
@@ -123,7 +123,7 @@ namespace Infrastructure.Identity
             var userClaims = new List<Claim>
             {
                 new Claim(JwtClaimTypes.Name, user.UserName),
-                new Claim(JwtClaimTypes.Subject, user.Id)
+                new Claim(JwtClaimTypes.Id, user.Id)
             };
 
             userClaims.AddRange(await _userManager.GetClaimsAsync(user));
@@ -158,6 +158,15 @@ namespace Infrastructure.Identity
                     Username = user.UserName
                 })
                 : Result<User>.Failure(new[] { $"No user found for the id {id}" });
+        }
+
+        /// <inheritdoc />
+        public async Task<bool> IsAdmin(Guid id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+
+            return user != null
+                   && await _userManager.IsInRoleAsync(user, ApplicationRoles.Administrator.ToString());
         }
 
         /// <inheritdoc />

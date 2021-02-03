@@ -3,7 +3,7 @@
 namespace Application.Commons.Interfaces
 {
     /// <summary>
-    /// Accessor for the current user's id
+    /// Accessor for the current user's data
     /// </summary>
     public interface ICurrentUserService
     {

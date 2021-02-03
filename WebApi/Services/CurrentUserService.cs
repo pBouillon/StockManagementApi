@@ -29,7 +29,7 @@ namespace WebApi.Services
                 var rawId = _httpContextAccessor
                     .HttpContext?
                     .User
-                    .FindFirstValue(JwtClaimTypes.Subject);
+                    .FindFirstValue(JwtClaimTypes.Id);
 
                 return rawId != null
                     ? Guid.Parse(rawId)

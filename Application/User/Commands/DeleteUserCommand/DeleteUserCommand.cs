@@ -25,6 +25,11 @@ namespace Application.User.Commands.DeleteUserCommand
     public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand>
     {
         /// <summary>
+        /// Accessor for the current user's data
+        /// </summary>
+        private readonly ICurrentUserService _currentUserService;
+
+        /// <summary>
         /// IdentityService instance to manage the authentication logic
         /// </summary>
         private readonly IIdentityService _identityService;
@@ -37,10 +42,12 @@ namespace Application.User.Commands.DeleteUserCommand
         /// <summary>
         /// Default constructor for the handler
         /// </summary>
+        /// <param name="currentUserService">Accessor for the current user's data</param>
         /// <param name="identityService">IdentityService instance to manage the authentication logic</param>
         /// <param name="logger">Logger</param>
-        public DeleteUserCommandHandler(IIdentityService identityService, ILogger<DeleteUserCommandHandler> logger)
-            => (_identityService, _logger) = (identityService, logger);
+        public DeleteUserCommandHandler(ICurrentUserService currentUserService, IIdentityService identityService,
+            ILogger<DeleteUserCommandHandler> logger)
+            => (_currentUserService, _identityService, _logger) = (currentUserService, identityService, logger);
 
         /// <summary>
         /// Delete a user in the database from the incoming <see cref="DeleteUserCommand"/>
@@ -52,6 +59,21 @@ namespace Application.User.Commands.DeleteUserCommand
         /// <returns>A no-op result</returns>
         public async Task<Unit> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
         {
+            var userId = _currentUserService.UserId;
+
+            var isOriginSelfOrAdmin = _currentUserService.UserId == request.Id
+                                      || await _identityService.IsAdmin(userId);
+
+            if (!isOriginSelfOrAdmin)
+            {
+                var unauthorizedException = new UnauthorizedException(userId, $"delete the user of id {request.Id}");
+                
+                _logger.LogError(
+                    unauthorizedException, $"The user of id {userId} attempted to delete the user {request.Id}");
+
+                throw unauthorizedException;
+            }
+
             var result = await _identityService.DeleteUserAsync(request.Id);
 
             if (!result.Succeeded)

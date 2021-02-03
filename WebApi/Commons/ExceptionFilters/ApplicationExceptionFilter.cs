@@ -12,7 +12,7 @@ namespace WebApi.Commons.ExceptionFilters
         /// <inheritdoc />
         protected override void HandleException(ExceptionContext context, ApplicationException exception)
         {
-            context.Result = new NotFoundObjectResult(new
+            context.Result = new BadRequestObjectResult(new
             {
                 Error = exception.Message
             });
