@@ -42,6 +42,16 @@ namespace Application.Commons.Interfaces
         Task<Result<Models.Identity.User>> GetUserAsync(Guid id);
 
         /// <summary>
+        /// Check whether or not the provided id is attached to a user with admin rights
+        /// </summary>
+        /// <param name="id">The id of the user to be checked</param>
+        /// <returns>
+        /// True if the user attached to this id has admin rights; false if the user does not exists or has not this
+        /// right
+        /// </returns>
+        Task<bool> IsAdmin(Guid id);
+
+        /// <summary>
         /// Update the username of a user
         /// </summary>
         /// <param name="id">Id of the user to update</param>

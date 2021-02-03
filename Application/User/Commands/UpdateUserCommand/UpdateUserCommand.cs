@@ -32,6 +32,10 @@ namespace Application.User.Commands.UpdateUserCommand
     public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, UserDto>
     {
         /// <summary>
+        /// Accessor for the current user's data
+        /// </summary>
+        private readonly ICurrentUserService _currentUserService;
+        /// <summary>
         /// IdentityService instance to manage the authentication logic
         /// </summary>
         private readonly IIdentityService _identityService;
@@ -48,12 +52,18 @@ namespace Application.User.Commands.UpdateUserCommand
         /// <summary>
         /// Default constructor for the handler
         /// </summary>
+        /// <param name="currentUserService">Accessor for the current user's data</param>
         /// <param name="identityService">IdentityService instance to manage the authentication logic</param>
         /// <param name="logger">Operation's logger</param>
         /// <param name="mapper">AutoMapper interface to map domain objects to DTO</param>
-        public UpdateUserCommandHandler(
-            IIdentityService identityService, ILogger<UpdateUserCommandHandler> logger, IMapper mapper)
-            => (_identityService, _logger, _mapper) = (identityService, logger, mapper);
+        public UpdateUserCommandHandler(ICurrentUserService currentUserService, IIdentityService identityService,
+            ILogger<UpdateUserCommandHandler> logger, IMapper mapper)
+        {
+            _currentUserService = currentUserService;
+            _identityService = identityService;
+            _logger = logger;
+            _mapper = mapper;
+        }
 
         /// <summary>
         /// Update a user in the database from the incoming <see cref="DeleteUserCommand"/>
@@ -65,6 +75,21 @@ namespace Application.User.Commands.UpdateUserCommand
         /// <returns>The new state of the resource</returns>
         public async Task<UserDto> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
         {
+            var userId = _currentUserService.UserId;
+
+            var isOriginSelfOrAdmin = _currentUserService.UserId == request.Id
+                                      || await _identityService.IsAdmin(userId);
+
+            if (!isOriginSelfOrAdmin)
+            {
+                var unauthorizedException = new UnauthorizedException(userId, $"update the user of id {request.Id}");
+
+                _logger.LogError(
+                    unauthorizedException, $"The user of id {userId} attempted to update the user {request.Id}");
+
+                throw unauthorizedException;
+            }
+
             var result = await _identityService.UpdateUsernameAsync(request.Id, request.Username);
 
             if (!result.Succeeded)

@@ -44,6 +44,8 @@ namespace WebApi
                 // Add filters for the application's exceptions
                 options.Filters.Add<ApplicationExceptionFilter>();
                 options.Filters.Add<IdentityExceptionFilter>();
+                options.Filters.Add<NotFoundExceptionFilter>();
+                options.Filters.Add<UnauthorizedExceptionFilter>();
                 options.Filters.Add<ValidationExceptionFilter>();
             });
 
