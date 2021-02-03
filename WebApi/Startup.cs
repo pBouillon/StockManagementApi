@@ -15,10 +15,12 @@ namespace WebApi
 {
     public class Startup
     {
+        private const string CorsAllowAll = "CorsAllowAll";
+
+        private const string CorsAllowSpecific = "CorsAllowSpecific";
+
         public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+            => Configuration = configuration;
 
         public IConfiguration Configuration { get; }
 
@@ -49,11 +51,28 @@ namespace WebApi
                 options.Filters.Add<ValidationExceptionFilter>();
             });
 
-            services.AddSwaggerGen(c =>
+            services.AddCors(options =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Stock management web API", Version = "v1" });
+                // Build the default policy for the dev environment, allowing everything
+                options.AddPolicy(CorsAllowAll, build
+                    => build.AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowAnyOrigin());
+
+                // Build the specific policy for the other environment with details specified in the appsettings.json
+                var specificOrigins = Configuration.GetSection("Cors:Origins").Get<string[]>();
+
+                options.AddPolicy(CorsAllowSpecific, build 
+                    => build.WithOrigins(specificOrigins)
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+            });
+
+            services.AddSwaggerGen(swaggerOptions =>
+            {
+                swaggerOptions.SwaggerDoc("v1", new OpenApiInfo { Title = "Stock management web API", Version = "v1" });
                 
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                swaggerOptions.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Description = @"JWT Authorization header using the Bearer scheme.
                       Enter 'Bearer' [space] and then your token in the text input below:",
@@ -63,7 +82,7 @@ namespace WebApi
                     Type = SecuritySchemeType.ApiKey,
                 });
 
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                swaggerOptions.AddSecurityRequirement(new OpenApiSecurityRequirement()
                 {
                     {
                         new OpenApiSecurityScheme
@@ -90,8 +109,13 @@ namespace WebApi
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Stock management web API v1"));
+                app.UseSwaggerUI(options 
+                    => options.SwaggerEndpoint("/swagger/v1/swagger.json", "Stock management web API v1"));
             }
+
+            app.UseCors(env.IsDevelopment()
+                ? CorsAllowAll
+                : CorsAllowSpecific);
 
             app.UseRouting();
 
