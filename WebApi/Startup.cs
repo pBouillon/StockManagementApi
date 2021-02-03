@@ -15,8 +15,14 @@ namespace WebApi
 {
     public class Startup
     {
+        /// <summary>
+        /// Name of the CORS policy allowing everything, intended for the development environment
+        /// </summary>
         private const string CorsAllowAll = "CorsAllowAll";
 
+        /// <summary>
+        /// Name of the CORS policy build from the appsettings.json, intended for the other environments
+        /// </summary>
         private const string CorsAllowSpecific = "CorsAllowSpecific";
 
         public Startup(IConfiguration configuration)
@@ -59,8 +65,9 @@ namespace WebApi
                         .AllowAnyMethod()
                         .AllowAnyOrigin());
 
-                // Build the specific policy for the other environment with details specified in the appsettings.json
-                var specificOrigins = Configuration.GetSection("Cors:Origins").Get<string[]>();
+                // Build the specific policy for the other environments with details specified in the appsettings.json
+                var specificOrigins = Configuration.GetSection("Cors:Origins")
+                    .Get<string[]>();
 
                 options.AddPolicy(CorsAllowSpecific, build 
                     => build.WithOrigins(specificOrigins)
@@ -82,7 +89,7 @@ namespace WebApi
                     Type = SecuritySchemeType.ApiKey,
                 });
 
-                swaggerOptions.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                swaggerOptions.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
                         new OpenApiSecurityScheme
