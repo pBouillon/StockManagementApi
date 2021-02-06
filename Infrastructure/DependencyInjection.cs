@@ -1,15 +1,17 @@
 ﻿using Application.Commons.Interfaces;
+using AspNetCoreRateLimit;
 using Infrastructure.Identity;
+using Infrastructure.Identity.Services;
 using Infrastructure.Persistence;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using Infrastructure.Identity.Services;
 
 namespace Infrastructure
 {
@@ -18,6 +20,39 @@ namespace Infrastructure
     /// </summary>
     public static class DependencyInjection
     {
+        /// <summary>
+        /// Configure the endpoint throttling
+        /// </summary>
+        /// <remarks>
+        /// More details on the repo:
+        /// https://github.com/stefanprodan/AspNetCoreRateLimit/wiki/IpRateLimitMiddleware#setup
+        /// </remarks>
+        /// <param name="services">
+        /// <see cref="IServiceCollection"/> used to setup the dependency injection container
+        /// </param>
+        /// <param name="configuration">Accessor to the configuration file</param>
+        private static void AddEndpointThrottling(this IServiceCollection services, IConfiguration configuration)
+        {
+            // Needed to load configuration from appsettings.json
+            services.AddOptions();
+
+            // Needed to store rate limit counters and ip rules
+            services.AddMemoryCache();
+
+            // Load general configuration from appsettings.json
+            services.Configure<IpRateLimitOptions>(configuration.GetSection("IpRateLimiting"));
+
+            // Load ip rules from appsettings.json
+            services.Configure<IpRateLimitPolicies>(configuration.GetSection("IpRateLimitPolicies"));
+
+            // Inject counter and rules stores
+            services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+            services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+
+            // Configuration (resolvers, counter key builders)
+            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+        }
+
         /// <summary>
         /// Add IdentityServer's services
         /// </summary>
@@ -91,6 +126,8 @@ namespace Infrastructure
         /// <param name="configuration">Accessor to the configuration file</param>
         public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddEndpointThrottling(configuration);
+
             services.AddPersistence(configuration);
 
             AddIdentityServer(services, configuration);
@@ -121,6 +158,15 @@ namespace Infrastructure
             }
 
             services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
+        }
+
+        /// <summary>
+        /// Use infrastructure's services
+        /// </summary>
+        /// <param name="app">Application builder</param>
+        public static void UseInfrastructure(this IApplicationBuilder app)
+        {
+            app.UseIpRateLimiting();
         }
     }
 }
