@@ -116,8 +116,8 @@ namespace Infrastructure.Identity.Services
         /// <summary>
         /// Get the claims associated to a registered <inheritdoc cref="ApplicationUser"/>
         /// </summary>
-        /// <param name="user">Registered user for which the claim will be retrieved</param>
-        /// <returns></returns>
+        /// <param name="user">Registered user for which the claims will be retrieved</param>
+        /// <returns>The claims associated to the provided user</returns>
         private async Task<List<Claim>> GetClaimsAsync(ApplicationUser user)
         {
             var userClaims = new List<Claim>
