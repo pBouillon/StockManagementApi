@@ -40,6 +40,7 @@ namespace Application
         private static void ConfigureMediatrPipeline(this IServiceCollection services)
         {
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehavior<,>));
         }
     }
 }

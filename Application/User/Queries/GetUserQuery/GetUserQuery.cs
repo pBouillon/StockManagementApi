@@ -65,11 +65,7 @@ namespace Application.User.Queries.GetUserQuery
 
             if (!result.Succeeded)
             {
-                var unknownUserException = new NotFoundException(nameof(Commons.Models.Identity.User), new { request.Id });
-
-                _logger.LogError(unknownUserException, $"No user found for the provided id {request.Id}");
-
-                throw unknownUserException;
+                throw new NotFoundException(nameof(Commons.Models.Identity.User), new { request.Id });
             }
 
             _logger.LogDebug($"User of id { request.Id } retrieved");
