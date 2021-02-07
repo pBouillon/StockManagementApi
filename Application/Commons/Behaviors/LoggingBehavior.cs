@@ -37,14 +37,12 @@ namespace Application.Commons.Behaviors
         /// <inheritdoc />
         public Task Process(TRequest request, CancellationToken cancellationToken)
         {
-            var logMessage = $"Incoming operation {typeof(TRequest).Name} received";
+            var currentUserId = _currentUserService.IsUserAuthenticated
+                ? _currentUserService.UserId.ToString()
+                : "Anonymous";
 
-            if (_currentUserService.IsUserAuthenticated)
-            {
-                logMessage += $" from the user of id {_currentUserService.UserId}";
-            }
-
-            _logger.LogInformation(logMessage);
+            _logger.LogInformation("Incoming operation {@Request} received from {@User}",
+                request, currentUserId);
 
             return Task.CompletedTask;
         }
