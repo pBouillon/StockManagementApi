@@ -82,24 +82,14 @@ namespace Application.User.Commands.UpdateUserCommand
 
             if (!isOriginSelfOrAdmin)
             {
-                var unauthorizedException = new UnauthorizedException(userId, $"update the user of id {request.Id}");
-
-                _logger.LogError(
-                    unauthorizedException, $"The user of id {userId} attempted to update the user {request.Id}");
-
-                throw unauthorizedException;
+                throw new UnauthorizedException(userId, $"update the user of id {request.Id}");
             }
 
             var result = await _identityService.UpdateUsernameAsync(request.Id, request.Username);
 
             if (!result.Succeeded)
             {
-                var identityException = new IdentityException(
-                    $"Unable to update the user {request.Username}", result.Errors);
-
-                _logger.LogError(identityException, "Reasons: {}", identityException.Errors);
-
-                throw identityException;
+                throw new IdentityException($"Unable to update the user {request.Username}", result.Errors);
             }
 
             _logger.LogInformation($"User of id {request.Id} renamed to {request.Username}");

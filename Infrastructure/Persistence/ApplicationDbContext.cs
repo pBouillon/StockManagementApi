@@ -52,16 +52,18 @@ namespace Infrastructure.Persistence
         {
             foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
             {
+                var entity = entry.Entity;
+
                 switch (entry.State)
                 {
                     case EntityState.Added:
                         entry.Entity.CreatedOn = _dateTime.Now;
-                        _logger.LogInformation($"Creation date set for {entry}");
+                        _logger.LogInformation("Creation date set for {Entity}", entity);
                         break;
 
                     case EntityState.Modified:
                         entry.Entity.LastModifiedOn = _dateTime.Now;
-                        _logger.LogInformation($"Modification date updated for {entry}");
+                        _logger.LogInformation("Modification date updated for {Entity}", entity);
                         break;
                 }
             }

@@ -69,7 +69,7 @@ namespace Application.Products.Commands.CreateProductCommand
 
             _ = await _context.SaveChangesAsync(cancellationToken);
 
-            _logger.LogInformation($"{entity} successfully created");
+            _logger.LogInformation("{Product} created", entity);
 
             return _mapper.Map<ProductDto>(entity);
         }

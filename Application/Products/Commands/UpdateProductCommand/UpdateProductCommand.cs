@@ -73,18 +73,15 @@ namespace Application.Products.Commands.UpdateProductCommand
             
             if (entity == null)
             {
-                var unknownProductException = new NotFoundException(nameof(Product), new { request.Id });
-
-                _logger.LogError(unknownProductException, $"No product found for the provided id {request.Id}");
-
-                throw unknownProductException;
+                throw new NotFoundException(nameof(Product), new { request.Id });
             }
 
+            var formerEntity = entity;
             entity.Name = request.Name;
 
             _ = _context.SaveChangesAsync(cancellationToken);
             
-            _logger.LogInformation($"{entity} renamed to {request.Name}");
+            _logger.LogInformation("{entity} updated to {Name}", formerEntity, entity);
 
             return _mapper.Map<ProductDto>(entity);
         }

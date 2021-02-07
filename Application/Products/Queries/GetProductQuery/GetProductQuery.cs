@@ -69,14 +69,8 @@ namespace Application.Products.Queries.GetProductQuery
 
             if (entity == null)
             {
-                var unknownProductException = new NotFoundException(nameof(Product), new { request.Id });
-
-                _logger.LogError(unknownProductException, $"No product found for the provided id {request.Id}");
-
-                throw unknownProductException;
+                throw new NotFoundException(nameof(Product), new { request.Id });
             }
-
-            _logger.LogDebug($"Product of id { request.Id } retrieved");
 
             return Task.FromResult(_mapper.Map<ProductDto>(entity));
         }

@@ -66,23 +66,14 @@ namespace Application.User.Commands.DeleteUserCommand
 
             if (!isOriginSelfOrAdmin)
             {
-                var unauthorizedException = new UnauthorizedException(userId, $"delete the user of id {request.Id}");
-                
-                _logger.LogError(
-                    unauthorizedException, $"The user of id {userId} attempted to delete the user {request.Id}");
-
-                throw unauthorizedException;
+                throw new UnauthorizedException(userId, $"delete the user of id {request.Id}");
             }
 
             var result = await _identityService.DeleteUserAsync(request.Id);
 
             if (!result.Succeeded)
             {
-                var unknownUserException = new NotFoundException(nameof(Commons.Models.Identity.User), new { request.Id });
-
-                _logger.LogError(unknownUserException, $"No user found for the provided id {request.Id}");
-
-                throw unknownUserException;
+                throw new NotFoundException(nameof(Commons.Models.Identity.User), new { request.Id });
             }
 
             _logger.LogInformation($"User of id {request.Id} successfully deleted");

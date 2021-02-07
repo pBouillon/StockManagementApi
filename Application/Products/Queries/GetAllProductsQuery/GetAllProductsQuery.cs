@@ -68,11 +68,6 @@ namespace Application.Products.Queries.GetAllProductsQuery
                 .ProjectTo<ProductDto>(_mapper.ConfigurationProvider)
                 .ToPaginatedListAsync(request.PageNumber, request.PageSize);
 
-            _logger.LogInformation(
-                $"Retrieved {paginatedEntities.Items.Count} product(s) " +
-                $"from the page {paginatedEntities.PageIndex}/{paginatedEntities.TotalPages} " +
-                $"({request.PageSize} item(s) displayed per pages)");
-
             return paginatedEntities;
         }
     }
