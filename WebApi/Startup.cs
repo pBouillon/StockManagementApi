@@ -1,3 +1,4 @@
+using System;
 using Application;
 using Application.Commons.Interfaces;
 using Infrastructure;
@@ -8,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using WebApi.Commons.ExceptionFilters;
 using WebApi.Services;
 
@@ -106,6 +109,13 @@ namespace WebApi
                         new List<string>()
                     }
                 });
+
+                // Set the comments path for the Swagger JSON and UI.
+                var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                var commentsFileName = Assembly.GetExecutingAssembly().GetName().Name + ".XML";
+                var commentsFile = Path.Combine(baseDirectory, commentsFileName);
+
+                swaggerOptions.IncludeXmlComments(commentsFile);
             });
         }
 
