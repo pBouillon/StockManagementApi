@@ -23,6 +23,8 @@ namespace WebApi.Controllers
         /// </summary>
         /// <param name="command">Payload from which the user will be authenticated</param>
         /// <returns>The user's authentication data</returns>
+        /// <response code="200">JWT successfully forged</response>
+        /// <response code="400">No user exists with the given credentials</response>
         [HttpPost]
         public async Task<ActionResult<AuthenticationResponse>> LogUserInAsync(LoginCommand command)
             => Ok(await Mediator.Send(command));
