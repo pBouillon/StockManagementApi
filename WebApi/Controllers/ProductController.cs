@@ -75,7 +75,7 @@ namespace WebApi.Controllers
         /// </summary>
         /// <param name="id">Id of the product to retrieve</param>
         /// <returns>The product matching the provided id</returns>
-        /// <response code="204">Product successfully fetched</response>
+        /// <response code="200">Product successfully fetched</response>
         /// <response code="401">Forbidden operation for a non-authenticated user</response>
         /// <response code="404">Unable to find a product matching the provided id</response>
         [HttpGet("{id}")]

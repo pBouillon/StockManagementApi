@@ -3,7 +3,6 @@ using Application.Commons.Models.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 
 namespace WebApi.Controllers
 {

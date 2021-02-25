@@ -29,6 +29,9 @@ namespace WebApi.Controllers
         /// </summary>
         /// <param name="command">Payload from which the new user will be created</param>
         /// <returns>A representation of the newly created user</returns>
+        /// <response code="201">User successfully created</response>
+        /// <response code="400">Invalid payload, unable to create the user</response>
+        /// <response code="401">Forbidden operation</response>
         [Authorize(Roles = "Administrator")]
         [HttpPost]
         public async Task<ActionResult<UserDto>> CreateUserAsync(CreateUserCommand command)
@@ -43,6 +46,9 @@ namespace WebApi.Controllers
         /// </summary>
         /// <param name="id">Id of the user to delete</param>
         /// <returns>No content on success</returns>
+        /// <response code="204">User successfully deleted</response>
+        /// <response code="401">Forbidden operation</response>
+        /// <response code="404">Unable to find a user matching the provided id</response>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUserByIdAsync(Guid id)
         {
@@ -56,6 +62,9 @@ namespace WebApi.Controllers
         /// </summary>
         /// <param name="id">Id of the user to retrieve</param>
         /// <returns>The user matching the provided id</returns>
+        /// <response code="200">User successfully fetched</response>
+        /// <response code="401">Forbidden operation</response>
+        /// <response code="404">Unable to find a user matching the provided id</response>
         [HttpGet("{id}")]
         public async Task<ActionResult<UserDto>> GetUserByIdAsync(Guid id)
             => Ok(await Mediator.Send(new GetUserQuery { Id = id }));
@@ -66,6 +75,9 @@ namespace WebApi.Controllers
         /// <param name="id">Id of the user to update</param>
         /// <param name="command">Payload from which the user will be updated</param>
         /// <returns>The updated user's representation</returns>
+        /// <response code="200">User successfully updated</response>
+        /// <response code="400">Invalid payload, unable to update the user</response>
+        /// <response code="401">Forbidden operation</response>
         [HttpPut("{id}")]
         public async Task<ActionResult<UserDto>> UpdateUserById(Guid id, UpdateUserCommand command)
         {
